@@ -1,0 +1,11 @@
+{
+  "port": 65100,
+  "ipv4-only": 1,
+  "bind-ip": "0.0.0.0",
+  "max-clients": 1000,
+  "client-login-timeout-sec": 10,
+  "client-timeout-sec": 30,
+  "server-password": "",
+  "auth-fail-ip-ignore-sec": 5,
+  "pidfile": "srf-ip-conn-srv.pid"
+}
