@@ -1,4 +1,4 @@
-# SharkRF IP Connector server
+# SharkRF IP Connector Protocol server
 
 This daemon can be used to create your own private radio network. You can
 connect to this server using the
