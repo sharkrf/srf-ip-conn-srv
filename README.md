@@ -75,13 +75,13 @@ Available configuration options:
 - **server-contact**: contact info for the server, this is displayed on the
   dashboard. The default value is empty.
 
-## Dashboard
-The server has a web-based dashboard. In order to use it, you need to serve it
-with your web server.
+## Dashboard (TODO)
+The server has a web-based dashboard. In order to use it, you need to serve
+the *dashboard* directory with your web server.
 
 The web interface periodically queries data from the PHP scripts, which
-interact with the running srf-ip-conn-srv process with JSON request and replies
-through Unix domain sockets.
+interact with the running srf-ip-conn-srv process with JSON requests and
+replies through Unix sockets.
 
 Each request and response has a **req** field which describes the type of the
 request and the response.
