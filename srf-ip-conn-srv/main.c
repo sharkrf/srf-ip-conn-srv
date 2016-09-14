@@ -2,6 +2,7 @@
 #include "config.h"
 #include "packet.h"
 #include "client.h"
+#include "api.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -23,6 +24,9 @@ static struct {
 } main_flags = {0,};
 
 static char *main_configfile = "config.json";
+static int main_server_sock_fd;
+static int main_api_sock_fd;
+time_t main_started_at;
 
 static void main_sighandler(int signal) {
 	switch (signal) {
@@ -115,9 +119,57 @@ static flag_t main_processcommandline(int argc, char **argv) {
 	return 1;
 }
 
-int main(int argc, char **argv) {
+flag_t main_select(void) {
 	server_sock_received_packet_t received_packet;
+	fd_set rfds;
+	struct timeval timeout = { .tv_sec = 1, .tv_usec = 0 }; // Blocking only for 1 second.
+	socklen_t addr_len;
+	int api_client_sock_fd;
+	int maxfd;
 
+	FD_ZERO(&rfds);
+	FD_SET(main_server_sock_fd, &rfds);
+	maxfd = main_server_sock_fd;
+	if (main_api_sock_fd >= 0) {
+		FD_SET(main_api_sock_fd, &rfds);
+		maxfd = max(maxfd, main_api_sock_fd);
+		maxfd = max(maxfd, api_add_clients_to_fd_set(&rfds));
+	}
+
+	switch (select(maxfd+1, &rfds, NULL, NULL, &timeout)) {
+		case -1:
+			syslog(LOG_ERR, "main: select() error\n");
+			main_flags.sigexit = 1;
+			return 0;
+		case 0: // Timeout
+			return 1;
+		default:
+			if (FD_ISSET(main_server_sock_fd, &rfds)) {
+				addr_len = sizeof(received_packet.from_addr);
+				received_packet.received_bytes = recvfrom(main_server_sock_fd, received_packet.buf,
+						sizeof(received_packet.buf), 0, &received_packet.from_addr, &addr_len);
+
+				if (received_packet.received_bytes >= sizeof(srf_ip_conn_packet_header_t) &&
+					srf_ip_conn_packet_is_header_valid((srf_ip_conn_packet_header_t *)received_packet.buf))
+				{
+					packet_process(&received_packet);
+				}
+			}
+
+			if (FD_ISSET(main_api_sock_fd, &rfds)) {
+				addr_len = sizeof(received_packet.from_addr);
+				if ((api_client_sock_fd = accept(main_api_sock_fd, (struct sockaddr *)&received_packet.from_addr, &addr_len)) >= 0) {
+					//syslog(LOG_INFO, "main: new api client %u\n", api_client_sock_fd);
+					api_client_add(api_client_sock_fd);
+				}
+			}
+
+			api_process_fd_set(&rfds);
+			return 1;
+	}
+}
+
+int main(int argc, char **argv) {
 	if (!main_processcommandline(argc, argv))
 		return 0;
 
@@ -152,28 +204,25 @@ int main(int argc, char **argv) {
 	signal(SIGTERM, main_sighandler);
 	signal(SIGPIPE, SIG_IGN);
 
-	if (!server_sock_init(config_port, config_ipv4_only, config_bind_ip_str)) {
+	if ((main_server_sock_fd = server_sock_init(config_port, config_ipv4_only, config_bind_ip_str)) < 0) {
 		closelog();
 		return 0;
 	}
+	main_api_sock_fd = api_init(config_api_socket_file_str);
 
 	syslog(LOG_INFO, "main: starting loop\n");
+	main_started_at = time(NULL);
 
 	while (!main_flags.sigexit) {
-		if (server_sock_receive(&received_packet) < 0)
-			break;
-
-		if (received_packet.received_bytes >= sizeof(srf_ip_conn_packet_header_t) &&
-			srf_ip_conn_packet_is_header_valid((srf_ip_conn_packet_header_t *)received_packet.buf))
-		{
-			packet_process(&received_packet);
-			received_packet.received_bytes = 0;
-		}
+		main_select();
 
 		client_process();
+		api_process();
 	}
 
-	server_sock_deinit();
+	close(main_api_sock_fd);
+	unlink(config_api_socket_file_str);
+	close(main_server_sock_fd);
 	unlink(config_pidfile_str);
 	closelog();
 

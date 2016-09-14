@@ -6,3 +6,8 @@ CMakeFiles
 .project
 .settings
 *.bak
+*.pid
+githash.h
+Debug
+Release
+Makefile

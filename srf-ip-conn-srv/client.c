@@ -16,6 +16,84 @@ uint16_t clients_count = 0;
 
 static ignored_ip_t *client_ignored_ips = NULL;
 
+// Searches for the given ID amongst the clients.
+static client_t *client_search_id(uint32_t client_id) {
+	client_t *cp = clients;
+
+	while (cp) {
+		if (cp->client_id == client_id)
+			return cp;
+		cp = cp->next;
+	}
+	return NULL;
+}
+
+char *client_build_config_json(uint32_t client_id) {
+	char *res;
+	int res_size = 900;
+	client_t *cp;
+
+	res = (char *)calloc(res_size+1, 1); // +1 so response will be always null-terminated.
+	if (res == NULL)
+		return NULL;
+
+	cp = client_search_id(client_id);
+	if (cp == NULL || !cp->got_config) {
+		snprintf(res, res_size, "{\"req\":\"client-config\",\"id\":%u,\"got-config\":0}", client_id);
+	} else {
+		snprintf(res, res_size, "{\"req\":\"client-config\",\"id\":%u,\"got-config\":1,\"operator-callsign\":\"%s\","
+			"\"hw-manufacturer\":\"%s\",\"hw-model\":\"%s\",\"hw-version\":\"%s\",\"sw-version\":\"%s\","
+			"\"rx-freq\":%u,\"tx-freq\":%u,\"tx-power\":%u,\"latitude\":\"%f\",\"longitude\":\"%f\","
+			"\"height-agl\":\"%d\",\"location\":\"%s\",\"description\":\"%s\"}",
+			client_id, cp->config.operator_callsign, cp->config.hw_manufacturer, cp->config.hw_model,
+			cp->config.hw_version, cp->config.sw_version, ntohl(cp->config.rx_freq), ntohl(cp->config.tx_freq),
+			cp->config.tx_power, cp->config.latitude, cp->config.longitude, ntohs(cp->config.height_agl),
+			cp->config.location, cp->config.description);
+	}
+
+	return res;
+}
+
+char *client_build_list_json(void) {
+	char *res;
+	int res_size = 32+clients_count*100;
+	int res_remaining_size = res_size;
+	int resp;
+	int printed_chars;
+	client_t *cp = clients;
+	int i = 0;
+
+	res = (char *)calloc(res_size+1, 1); // +1 so response will be always null-terminated.
+	if (res == NULL)
+		return NULL;
+
+	printed_chars = snprintf(res, res_size, "{\"req\":\"client-list\",\"list\":[");
+	res_remaining_size -= printed_chars;
+	resp = printed_chars;
+	while (cp) {
+		if (i++ > 0) {
+			printed_chars = snprintf(res+resp, res_remaining_size, ",");
+			res_remaining_size -= printed_chars;
+			if (res_remaining_size <= 0)
+				break;
+			resp += printed_chars;
+		}
+
+		printed_chars = snprintf(res+resp, res_remaining_size, "{\"id\":%u,\"last-data-pkt-at\":%lu}",
+				cp->client_id, cp->last_data_packet_at);
+		res_remaining_size -= printed_chars;
+		if (res_remaining_size <= 0)
+			break;
+		resp += printed_chars;
+
+		cp = cp->next;
+	}
+	if (res_remaining_size > 0)
+		snprintf(res+resp, res_remaining_size, "]}");
+
+	return res;
+}
+
 // Searches for the given ignored IP.
 ignored_ip_t *client_ignored_ip_search(struct sockaddr *addr) {
 	ignored_ip_t *ipp = client_ignored_ips;

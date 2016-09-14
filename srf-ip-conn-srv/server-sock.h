@@ -13,10 +13,8 @@ typedef struct {
 	struct sockaddr from_addr;
 } server_sock_received_packet_t;
 
-int server_sock_receive(server_sock_received_packet_t *packet);
 flag_t server_sock_send(uint8_t *buf, uint16_t buflen, struct sockaddr *dst_addr);
 
-flag_t server_sock_init(uint16_t port, flag_t ipv4_only, char *bind_ip);
-void server_sock_deinit(void);
+int server_sock_init(uint16_t port, flag_t ipv4_only, char *bind_ip);
 
 #endif

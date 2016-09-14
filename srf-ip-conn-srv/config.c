@@ -15,13 +15,17 @@ uint16_t config_client_timeout_sec = 30;
 char config_server_password_str[SRF_IP_CONN_MAX_PASSWORD_LENGTH] = {0,};
 uint16_t config_auth_fail_ip_ignore_sec = 5;
 char config_pidfile_str[255] = {0,};
+char config_api_socket_file_str[255] = "/tmp/srf-ip-conn-srv.socket";
+char config_server_name_str[255] = "SharkRF IP Connector Protocol Server";
+char config_server_desc_str[255] = {0,};
+char config_server_contact_str[255] = {0,};
 
 flag_t config_read(char *filename) {
 	FILE *f;
 	long fsize;
 	char *buf;
 	jsmn_parser json_parser;
-	jsmntok_t tok[20];
+	jsmntok_t tok[28];
 	int json_entry_count;
 	int i;
 	char port_str[6] = {0,};
@@ -33,6 +37,10 @@ flag_t config_read(char *filename) {
 	char server_password_str[SRF_IP_CONN_MAX_PASSWORD_LENGTH] = {0,};
 	char auth_fail_ip_ignore_sec_str[6] = {0,};
 	char pidfile_str[255] = {0,};
+	char api_socket_file_str[255] = {0,};
+	char server_name_str[255] = {0,};
+	char server_desc_str[255] = {0,};
+	char server_contact_str[255] = {0,};
 
 	f = fopen(filename, "r");
 	if (f == NULL) {
@@ -94,6 +102,18 @@ flag_t config_read(char *filename) {
 		} else if (json_compare_tok_key(buf, &tok[i], "pidfile")) {
 			json_get_value(buf, &tok[i+1], pidfile_str, sizeof(pidfile_str));
 			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "api-socket-file")) {
+			json_get_value(buf, &tok[i+1], api_socket_file_str, sizeof(api_socket_file_str));
+			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "server-name")) {
+			json_get_value(buf, &tok[i+1], server_name_str, sizeof(server_name_str));
+			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "server-desc")) {
+			json_get_value(buf, &tok[i+1], server_desc_str, sizeof(server_desc_str));
+			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "server-contact")) {
+			json_get_value(buf, &tok[i+1], server_contact_str, sizeof(server_contact_str));
+			i++;
 		} else {
 			free(buf);
 			syslog(LOG_ERR, "config: unexpected key at %u\n", tok[i].start);
@@ -121,6 +141,14 @@ flag_t config_read(char *filename) {
 		config_auth_fail_ip_ignore_sec = atoi(auth_fail_ip_ignore_sec_str);
 	if (pidfile_str[0])
 		strncpy(config_pidfile_str, pidfile_str, sizeof(config_pidfile_str));
+	if (api_socket_file_str[0])
+		strncpy(config_api_socket_file_str, api_socket_file_str, sizeof(config_api_socket_file_str));
+	if (server_name_str[0])
+		strncpy(config_server_name_str, server_name_str, sizeof(config_server_name_str));
+	if (server_desc_str[0])
+		strncpy(config_server_desc_str, server_desc_str, sizeof(config_server_desc_str));
+	if (server_contact_str[0])
+		strncpy(config_server_contact_str, server_contact_str, sizeof(config_server_contact_str));
 
 	return 1;
 }

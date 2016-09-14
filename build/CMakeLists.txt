@@ -9,6 +9,13 @@ SET(SRC_DIR "../srf-ip-conn-srv")
 
 INCLUDE(CMakeForceCompiler)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+include(GetGitRevisionDescription)
+get_git_head_revision(GIT_REFSPEC GIT_SHA1)
+STRING(SUBSTRING ${GIT_SHA1} 0 7 GIT_SHA1_7CHARS)
+STRING(TOUPPER ${GIT_SHA1_7CHARS} GIT_SHA1_7CHARS)
+CONFIGURE_FILE("${SRC_DIR}/githash.h.in" "${SRC_DIR}/githash.h" @ONLY)
+
 IF(NOT CMAKE_BUILD_TYPE MATCHES Debug)
     SET (CMAKE_BUILD_TYPE Release)
 ENDIF()
@@ -76,4 +83,7 @@ ADD_EXECUTABLE(	${APP_NAME}
 	${SRC_DIR}/packet.c
 	${SRC_DIR}/client.h
 	${SRC_DIR}/client.c
+	${SRC_DIR}/api.h
+	${SRC_DIR}/api.c
+	${SRC_DIR}/githash.h
 )

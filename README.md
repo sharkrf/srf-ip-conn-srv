@@ -66,3 +66,88 @@ Available configuration options:
   brute force password attacks. The default value is 5.
 - **pidfile**: the daemon puts it's PID into this file, and deletes the file
   when it's closed.
+- **api-socket-file**: this is the Unix socket file which can be used to
+  access the server's API. The default value is "/tmp/srf-ip-conn-srv.socket".
+- **server-name**: name of the server, this is displayed on the dashboard.
+  The default value is "SharkRF IP Connector Protocol Server".
+- **server-description**: description of the server, this is displayed on the
+  dashboard. The default value is empty.
+- **server-contact**: contact info for the server, this is displayed on the
+  dashboard. The default value is empty.
+
+## Dashboard
+The server has a web-based dashboard. In order to use it, you need to serve it
+with your web server.
+
+The web interface periodically queries data from the PHP scripts, which
+interact with the running srf-ip-conn-srv process with JSON request and replies
+through Unix domain sockets.
+
+Each request and response has a **req** field which describes the type of the
+request and the response.
+
+Valid **req** values:
+
+- **client-list**: requests the client list. The response looks like this:
+
+```
+{
+	"req": "client-list",
+	"list":
+	[
+		{"id":2161005,"last-data-pkt-at":0},
+		{"id":2161006,"last-data-pkt-at":0}
+	]
+}
+```
+
+  Each client has it's own entry in the "list" array. The "last-data-pkt-at"
+  field has the value of the last valid data packet (raw, DMR, D-STAR, C4FM)
+  received in Unix timestamp. It's 0 if no data packet has been received from
+  the client yet.
+
+- **server-details**: requests server info. The response looks like this:
+
+```
+{
+	"req": "server-details",
+	"name": "SharkRF IP Connector Protocol Server",
+	"desc": "No description",
+	"contact": "ha2non@sharkrf.com",
+	"uptime": 1635,
+	"githash": "d04633f145069ed4d60d17bf76df447f459f1ed4"
+}
+```
+
+  "name", "desc" and "contact" fields have the values set in srf-ip-conn-srv's
+  config file. "uptime" is in seconds. The "githash" field is the compiled
+  version's Git hash.
+
+- **client-config**: requests client config. "client-id" field needs to be
+  specified amongst "req" field in the request JSON. The response looks like
+  this:
+
+```
+{
+	"req": "client-config",
+	"id": 2161006,
+	"got-config": 1,
+	"operator-callsign": "HG1MA",
+	"hw-manufacturer": "SharkRF",
+	"hw-model": "openSPOT",
+	"hw-version": "1.0",
+	"sw-version": "0054",
+	"rx-freq": 435000000,
+	"tx-freq": 435000000,
+	"tx-power": 13,
+	"latitude": "0.000000",
+	"longitude": "0.000000",
+	"height-agl": "0",
+	"location": "",
+	"description": "openspot-devicename"
+}
+```
+
+  "tx-power" is in dBm. If the requested client ID is not found, or the
+  server has no config info from the client, "got-config" will be 0 and only
+  "req", "id", and "got-config" fields will be included in the response.

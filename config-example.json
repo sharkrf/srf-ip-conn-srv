@@ -7,5 +7,9 @@
   "client-timeout-sec": 30,
   "server-password": "",
   "auth-fail-ip-ignore-sec": 5,
-  "pidfile": "srf-ip-conn-srv.pid"
+  "pidfile": "srf-ip-conn-srv.pid",
+  "api-socket-file": "/tmp/srf-ip-conn-srv.socket",
+  "server-name": "SharkRF IP Connector Protocol Server",
+  "server-desc": "",
+  "server-contact": ""
 }

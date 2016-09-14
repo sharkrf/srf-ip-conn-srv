@@ -13,6 +13,7 @@ typedef struct clients {
     uint8_t token[SRF_IP_CONN_TOKEN_LENGTH];
     struct sockaddr from_addr;
     time_t last_valid_packet_got_at;
+    time_t last_data_packet_at;
 
     flag_t got_config;
     srf_ip_conn_config_payload_t config;
@@ -31,6 +32,9 @@ typedef struct ignored_ip {
 
 extern uint16_t clients_login_count;
 extern uint16_t clients_count;
+
+char *client_build_config_json(uint32_t client_id);
+char *client_build_list_json(void);
 
 ignored_ip_t *client_ignored_ip_search(struct sockaddr *addr);
 void client_ignored_ip_add(struct sockaddr *addr);

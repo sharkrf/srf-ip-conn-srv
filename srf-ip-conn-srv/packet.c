@@ -200,7 +200,7 @@ static void packet_process_raw(server_sock_received_packet_t *received_packet) {
 	if (!srf_ip_conn_packet_hmac_check(client->token, config_server_password_str, packet, sizeof(srf_ip_conn_data_raw_payload_t)))
 		return;
 
-	client->last_valid_packet_got_at = time(NULL);
+	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_raw_payload_t));
 }
 
@@ -218,7 +218,7 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 	if (!srf_ip_conn_packet_hmac_check(client->token, config_server_password_str, packet, sizeof(srf_ip_conn_data_dmr_payload_t)))
 		return;
 
-	client->last_valid_packet_got_at = time(NULL);
+	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dmr_payload_t));
 }
 
@@ -236,7 +236,7 @@ static void packet_process_dstar(server_sock_received_packet_t *received_packet)
 	if (!srf_ip_conn_packet_hmac_check(client->token, config_server_password_str, packet, sizeof(srf_ip_conn_data_dstar_payload_t)))
 		return;
 
-	client->last_valid_packet_got_at = time(NULL);
+	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dstar_payload_t));
 }
 
@@ -254,7 +254,7 @@ static void packet_process_c4fm(server_sock_received_packet_t *received_packet) 
 	if (!srf_ip_conn_packet_hmac_check(client->token, config_server_password_str, packet, sizeof(srf_ip_conn_data_dstar_payload_t)))
 		return;
 
-	client->last_valid_packet_got_at = time(NULL);
+	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_c4fm_payload_t));
 }
 

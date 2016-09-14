@@ -16,6 +16,10 @@ extern uint16_t config_client_timeout_sec;
 extern char config_server_password_str[SRF_IP_CONN_MAX_PASSWORD_LENGTH];
 extern uint16_t config_auth_fail_ip_ignore_sec;
 extern char config_pidfile_str[255];
+extern char config_api_socket_file_str[255];
+extern char config_server_name_str[255];
+extern char config_server_desc_str[255];
+extern char config_server_contact_str[255];
 
 flag_t config_read(char *filename);
 
