@@ -95,8 +95,8 @@ Valid **req** values:
 	"req": "client-list",
 	"list":
 	[
-		{"id":2161005,"last-data-pkt-at":0},
-		{"id":2161006,"last-data-pkt-at":0}
+		{"id":2161005,"last-data-pkt-at":0,"got-config":1},
+		{"id":2161006,"last-data-pkt-at":0,"got-config":0}
 	]
 }
 ```
@@ -104,7 +104,8 @@ Valid **req** values:
   Each client has it's own entry in the "list" array. The "last-data-pkt-at"
   field has the value of the last valid data packet (raw, DMR, D-STAR, C4FM)
   received in Unix timestamp. It's 0 if no data packet has been received from
-  the client yet.
+  the client yet. If the server has config information from the client,
+  "got-config" is 1.
 
 - **server-details**: requests server info. The response looks like this:
 
@@ -151,3 +152,20 @@ Valid **req** values:
   "tx-power" is in dBm. If the requested client ID is not found, or the
   server has no config info from the client, "got-config" will be 0 and only
   "req", "id", and "got-config" fields will be included in the response.
+
+- **lastheard-list**: requests the last heard list. The response looks like this:
+
+```
+{
+	"req": "lastheard-list",
+	"list":
+	[
+		{"id":2161005,"at":1473956629,"mode":1},
+		{"id":2161006,"at":1473956432,"mode":0}
+	]
+}
+```
+
+  Each client has it's own entry in the "list" array. The "at" field has the
+  value of the last valid data packet (raw, DMR, D-STAR, C4FM) received in Unix
+  timestamp. Valid mode values are 0 (Raw), 1 (DMR), 2 (D-STAR), 3 (C4FM).

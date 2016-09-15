@@ -11,3 +11,4 @@ githash.h
 Debug
 Release
 Makefile
+config.inc.php

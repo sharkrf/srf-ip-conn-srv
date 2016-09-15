@@ -19,6 +19,7 @@ char config_api_socket_file_str[255] = "/tmp/srf-ip-conn-srv.socket";
 char config_server_name_str[255] = "SharkRF IP Connector Protocol Server";
 char config_server_desc_str[255] = {0,};
 char config_server_contact_str[255] = {0,};
+uint16_t config_max_lastheard_entry_count = 30;
 
 flag_t config_read(char *filename) {
 	FILE *f;
@@ -41,6 +42,7 @@ flag_t config_read(char *filename) {
 	char server_name_str[255] = {0,};
 	char server_desc_str[255] = {0,};
 	char server_contact_str[255] = {0,};
+	char max_lastheard_entry_count_str[6] = {0,};
 
 	f = fopen(filename, "r");
 	if (f == NULL) {
@@ -114,6 +116,9 @@ flag_t config_read(char *filename) {
 		} else if (json_compare_tok_key(buf, &tok[i], "server-contact")) {
 			json_get_value(buf, &tok[i+1], server_contact_str, sizeof(server_contact_str));
 			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "max-lastheard-entry-count")) {
+			json_get_value(buf, &tok[i+1], max_lastheard_entry_count_str, sizeof(max_lastheard_entry_count_str));
+			i++;
 		} else {
 			free(buf);
 			syslog(LOG_ERR, "config: unexpected key at %u\n", tok[i].start);
@@ -149,6 +154,8 @@ flag_t config_read(char *filename) {
 		strncpy(config_server_desc_str, server_desc_str, sizeof(config_server_desc_str));
 	if (server_contact_str[0])
 		strncpy(config_server_contact_str, server_contact_str, sizeof(config_server_contact_str));
+	if (max_lastheard_entry_count_str[0])
+		config_max_lastheard_entry_count = atoi(max_lastheard_entry_count_str);
 
 	return 1;
 }

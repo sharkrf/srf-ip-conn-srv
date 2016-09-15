@@ -2,12 +2,14 @@
 #include "config.h"
 #include "client.h"
 #include "githash.h"
+#include "lastheard.h"
 
 #include <json.h>
 
 #include <syslog.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -76,6 +78,8 @@ static void api_process_req(api_client_t *client, char *req, uint16_t req_size) 
 		reply = api_build_serverdetails_json();
 	if (memcmp(req_name_str, "client-config", 14) == 0)
 		reply = client_build_config_json(atoi(client_id_str));
+	if (memcmp(req_name_str, "lastheard-list", 15) == 0)
+		reply = lastheard_build_list_json();
 
 	if (reply != NULL) {
 		send(client->sock, reply, strlen(reply), 0);
@@ -171,6 +175,7 @@ void api_process(void) {
 int api_init(char *api_socket_file) {
 	int sock, len;
 	struct sockaddr_un local;
+	mode_t old_umask;
 
 	if (strlen(api_socket_file) == 0)
 		return -1;
@@ -183,12 +188,19 @@ int api_init(char *api_socket_file) {
     local.sun_family = AF_UNIX;
     strcpy(local.sun_path, api_socket_file);
     unlink(local.sun_path);
-    len = strlen(local.sun_path) + sizeof(local.sun_family);
+
+    // Setting default file permissions to +rw for all.
+    old_umask = umask(~(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH));
+
+	len = strlen(local.sun_path) + sizeof(local.sun_family);
     if (bind(sock, (struct sockaddr *)&local, len) == -1) {
     	close(sock);
 		syslog(LOG_ERR, "api: unix socket bind error\n");
 		return -1;
     }
+
+    // Restoring old umask.
+    umask(old_umask);
 
     if (listen(sock, 5) == -1) {
     	close(sock);

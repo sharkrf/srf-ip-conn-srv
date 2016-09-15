@@ -2,6 +2,7 @@
 #include "server-sock.h"
 #include "config.h"
 #include "client.h"
+#include "lastheard.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -201,6 +202,7 @@ static void packet_process_raw(server_sock_received_packet_t *received_packet) {
 		return;
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
+	lastheard_add(client->client_id, LASTHEARD_MODE_RAW);
 	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_raw_payload_t));
 }
 
@@ -219,6 +221,7 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 		return;
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
+	lastheard_add(client->client_id, LASTHEARD_MODE_DMR);
 	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dmr_payload_t));
 }
 
@@ -237,6 +240,7 @@ static void packet_process_dstar(server_sock_received_packet_t *received_packet)
 		return;
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
+	lastheard_add(client->client_id, LASTHEARD_MODE_DSTAR);
 	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dstar_payload_t));
 }
 
@@ -255,6 +259,7 @@ static void packet_process_c4fm(server_sock_received_packet_t *received_packet) 
 		return;
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
+	lastheard_add(client->client_id, LASTHEARD_MODE_C4FM);
 	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_c4fm_payload_t));
 }
 

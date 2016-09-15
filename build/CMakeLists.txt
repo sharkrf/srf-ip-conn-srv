@@ -86,4 +86,6 @@ ADD_EXECUTABLE(	${APP_NAME}
 	${SRC_DIR}/api.h
 	${SRC_DIR}/api.c
 	${SRC_DIR}/githash.h
+	${SRC_DIR}/lastheard.h
+	${SRC_DIR}/lastheard.c
 )
