@@ -78,6 +78,9 @@ Available configuration options:
   dashboard. The default value is empty.
 - **server-contact**: contact info for the server, this is displayed on the
   dashboard. The default value is empty.
+- **allow-simultaneous-calls**: by default, the server allows only one client
+  to transmit at a time. You can disable this behavior by setting this to 1.
+  Set this to 1 if you want to send/receive DMR data over the server.
 
 ## Dashboard
 ![Dashboard](https://cdn.rawgit.com/sharkrf/srf-ip-conn-srv/master/contrib/screenshot.png)
@@ -165,14 +168,17 @@ Valid **req** values:
 ```
 {
 	"req": "lastheard-list",
+	"in-call": 0
 	"list":
 	[
-		{"id":2161005,"at":1473956629,"mode":1},
-		{"id":2161006,"at":1473956432,"mode":0}
+		{"id":2161005,"at":1473956629,"mode":1,duration:1},
+		{"id":2161006,"at":1473956432,"mode":0,duration:5}
 	]
 }
 ```
 
+  "in-call" is 1 if the first entry is in an ongoing call.
   Each client has it's own entry in the "list" array. The "at" field has the
   value of the last valid data packet (raw, DMR, D-STAR, C4FM) received in Unix
   timestamp. Valid mode values are 0 (Raw), 1 (DMR), 2 (D-STAR), 3 (C4FM).
+  Duration is in seconds.

@@ -12,5 +12,6 @@
   "api-socket-file": "/tmp/srf-ip-conn-srv.socket",
   "server-name": "SharkRF IP Connector Protocol Server",
   "server-desc": "",
-  "server-contact": ""
+  "server-contact": "",
+  "allow-simultaneous-calls": 0
 }

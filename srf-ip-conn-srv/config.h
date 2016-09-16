@@ -22,6 +22,8 @@ extern char config_server_desc_str[255];
 extern char config_server_contact_str[255];
 extern uint16_t config_max_lastheard_entry_count;
 extern uint16_t config_max_api_clients;
+extern uint16_t config_client_call_timeout_sec;
+extern flag_t config_allow_simultaneous_calls;
 
 flag_t config_read(char *filename);
 

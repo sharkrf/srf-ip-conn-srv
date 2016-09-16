@@ -132,6 +132,8 @@ function srf_showinfo(id) {
 
 function srf_lastheard_update() {
 	srf_req('api.php?req=lastheard-list', function(response) {
+		var i = 0;
+		var in_call = response['in-call'];
 		$('#last-heard tbody tr').remove();
 		$.each(response.list, function(key, value) {
 			var at = new Date(value['at'] * 1000).toLocaleString('en-GB', {
@@ -150,12 +152,22 @@ function srf_lastheard_update() {
 				case 3: mode = 'C4FM'; break;
 				default: mode = 'Unknown'; break;
 			}
+			var duration = value['duration'];
+			if (duration > 60)
+				duration = duration/60 + ' min. ' + duration % 60 + ' sec.';
+			else
+				duration = duration + ' sec.';
+
+			if (i == 0 && in_call)
+				duration += ' <span class="in-call">(in call)</span>';
 
 			$('#last-heard tbody').append('<tr>' +
 				'<td>' + value['id'] + '</td>' +
 				'<td>' + at + '</td>' +
 				'<td>' + mode + '</td>' +
+				'<td>' + duration + '</td>' +
 				'</tr>');
+			i++;
 		});
 	});
 }

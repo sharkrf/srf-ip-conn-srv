@@ -16,6 +16,9 @@ uint16_t clients_count = 0;
 
 static ignored_ip_t *client_ignored_ips = NULL;
 
+client_t *client_in_call = NULL;
+time_t client_in_call_started_at;
+
 // Searches for the given ID amongst the clients.
 static client_t *client_search_id(uint32_t client_id) {
 	client_t *cp = clients;
@@ -322,5 +325,11 @@ void client_process(void) {
 				cp = cp->next;
 			}
 		}
+	}
+
+	if (client_in_call && time(NULL)-client_in_call->last_data_packet_at >= config_client_call_timeout_sec) {
+		syslog(LOG_INFO, "client: %u call timeout, duration %lu sec.\n", client_in_call->client_id,
+				time(NULL)-client_in_call_started_at);
+		client_in_call = NULL;
 	}
 }

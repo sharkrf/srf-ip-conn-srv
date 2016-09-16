@@ -21,13 +21,15 @@ char config_server_desc_str[255] = {0,};
 char config_server_contact_str[255] = {0,};
 uint16_t config_max_lastheard_entry_count = 30;
 uint16_t config_max_api_clients = 100;
+uint16_t config_client_call_timeout_sec = 3;
+flag_t config_allow_simultaneous_calls = 0;
 
 flag_t config_read(char *filename) {
 	FILE *f;
 	long fsize;
 	char *buf;
 	jsmn_parser json_parser;
-	jsmntok_t tok[30];
+	jsmntok_t tok[32];
 	int json_entry_count;
 	int i;
 	char port_str[6] = {0,};
@@ -45,6 +47,8 @@ flag_t config_read(char *filename) {
 	char server_contact_str[255] = {0,};
 	char max_lastheard_entry_count_str[6] = {0,};
 	char max_api_clients_str[6] = {0,};
+	char client_call_timeout_sec_str[6] = {0,};
+	char allow_simultaneous_calls_str[2] = {0,};
 
 	f = fopen(filename, "r");
 	if (f == NULL) {
@@ -124,6 +128,12 @@ flag_t config_read(char *filename) {
 		} else if (json_compare_tok_key(buf, &tok[i], "max-api-clients")) {
 			json_get_value(buf, &tok[i+1], max_api_clients_str, sizeof(max_api_clients_str));
 			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "client-call-timeout-sec")) {
+			json_get_value(buf, &tok[i+1], client_call_timeout_sec_str, sizeof(client_call_timeout_sec_str));
+			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "allow-simultaneous-calls")) {
+			json_get_value(buf, &tok[i+1], allow_simultaneous_calls_str, sizeof(allow_simultaneous_calls_str));
+			i++;
 		} else {
 			free(buf);
 			syslog(LOG_ERR, "config: unexpected key at %u\n", tok[i].start);
@@ -163,6 +173,10 @@ flag_t config_read(char *filename) {
 		config_max_lastheard_entry_count = atoi(max_lastheard_entry_count_str);
 	if (max_api_clients_str[0])
 		config_max_api_clients = atoi(max_api_clients_str);
+	if (client_call_timeout_sec_str[0])
+		config_client_call_timeout_sec = atoi(client_call_timeout_sec_str);
+	if (allow_simultaneous_calls_str[0])
+		config_allow_simultaneous_calls = (allow_simultaneous_calls_str[0] == '1');
 
 	return 1;
 }

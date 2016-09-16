@@ -34,6 +34,8 @@ typedef struct ignored_ip {
 
 extern uint16_t clients_login_count;
 extern uint16_t clients_count;
+extern client_t *client_in_call;
+extern time_t client_in_call_started_at;
 
 char *client_build_config_json(uint32_t client_id);
 char *client_build_list_json(void);
