@@ -153,8 +153,8 @@ function srf_lastheard_update() {
 				default: mode = 'Unknown'; break;
 			}
 			var duration = value['duration'];
-			if (duration > 60)
-				duration = duration/60 + ' min. ' + duration % 60 + ' sec.';
+			if (duration >= 60)
+				duration = Math.round(duration/60) + ' min. ' + duration % 60 + ' sec.';
 			else
 				duration = duration + ' sec.';
 
