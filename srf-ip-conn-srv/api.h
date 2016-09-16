@@ -17,7 +17,7 @@ typedef struct api_client {
 int api_add_clients_to_fd_set(fd_set *fds);
 void api_process_fd_set(fd_set *fds);
 
-flag_t api_client_add(int sock);
+void api_client_add(int sock);
 
 void api_process(void);
 int api_init(char *api_socket_file);

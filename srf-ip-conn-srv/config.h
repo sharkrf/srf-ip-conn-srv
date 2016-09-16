@@ -21,6 +21,7 @@ extern char config_server_name_str[255];
 extern char config_server_desc_str[255];
 extern char config_server_contact_str[255];
 extern uint16_t config_max_lastheard_entry_count;
+extern uint16_t config_max_api_clients;
 
 flag_t config_read(char *filename);
 

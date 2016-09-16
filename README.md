@@ -55,6 +55,9 @@ Available configuration options:
   the daemon listens on all interfaces
 - **max-clients**: the number of max. clients logged in to the server.
   The default value is 1000.
+- **max-api-clients**: the number of max. API clients. Increase this if the
+  dashboard becomes unreachable because of too many requests. The default
+  value is 100.
 - **client-login-timeout-sec**: if the client gets idle during login, it will
   be deleted from the login clients list after this many seconds. The default
   value is 10.

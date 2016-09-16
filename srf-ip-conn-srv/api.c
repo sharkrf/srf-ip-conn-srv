@@ -14,8 +14,10 @@
 #include <unistd.h>
 
 static api_client_t *api_clients = NULL;
+static int api_clients_count = 0;
 
 static void api_client_delete(api_client_t *client) {
+	api_clients_count--;
 	if (client->sock >= 0)
 		close(client->sock);
 	if (client->next)
@@ -128,18 +130,22 @@ static api_client_t *api_client_search(int sock) {
 	return NULL;
 }
 
-flag_t api_client_add(int sock) {
+void api_client_add(int sock) {
 	api_client_t *newclient;
 
 	newclient = api_client_search(sock);
 	if (newclient == NULL) {
+		if (api_clients_count >= config_max_api_clients)
+			return;
+
 		newclient = (api_client_t *)calloc(sizeof(api_client_t), 1);
 		if (newclient == NULL)
-			return 0;
+			return;
+		api_clients_count++;
 	} else {
 		// If the client already exists, we only update the timestamp.
 		newclient->last_valid_packet_got_at = time(NULL);
-		return 1;
+		return;
 	}
 
 	newclient->sock = sock;
@@ -153,7 +159,6 @@ flag_t api_client_add(int sock) {
 		newclient->next = api_clients;
 		api_clients = newclient;
 	}
-	return 1;
 }
 
 void api_process(void) {
@@ -202,7 +207,7 @@ int api_init(char *api_socket_file) {
     // Restoring old umask.
     umask(old_umask);
 
-    if (listen(sock, 5) == -1) {
+    if (listen(sock, config_max_api_clients) == -1) {
     	close(sock);
 		syslog(LOG_ERR, "api: unix socket listen error\n");
 		return -1;

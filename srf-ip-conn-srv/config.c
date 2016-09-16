@@ -20,13 +20,14 @@ char config_server_name_str[255] = "SharkRF IP Connector Protocol Server";
 char config_server_desc_str[255] = {0,};
 char config_server_contact_str[255] = {0,};
 uint16_t config_max_lastheard_entry_count = 30;
+uint16_t config_max_api_clients = 100;
 
 flag_t config_read(char *filename) {
 	FILE *f;
 	long fsize;
 	char *buf;
 	jsmn_parser json_parser;
-	jsmntok_t tok[28];
+	jsmntok_t tok[30];
 	int json_entry_count;
 	int i;
 	char port_str[6] = {0,};
@@ -43,6 +44,7 @@ flag_t config_read(char *filename) {
 	char server_desc_str[255] = {0,};
 	char server_contact_str[255] = {0,};
 	char max_lastheard_entry_count_str[6] = {0,};
+	char max_api_clients_str[6] = {0,};
 
 	f = fopen(filename, "r");
 	if (f == NULL) {
@@ -119,6 +121,9 @@ flag_t config_read(char *filename) {
 		} else if (json_compare_tok_key(buf, &tok[i], "max-lastheard-entry-count")) {
 			json_get_value(buf, &tok[i+1], max_lastheard_entry_count_str, sizeof(max_lastheard_entry_count_str));
 			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "max-api-clients")) {
+			json_get_value(buf, &tok[i+1], max_api_clients_str, sizeof(max_api_clients_str));
+			i++;
 		} else {
 			free(buf);
 			syslog(LOG_ERR, "config: unexpected key at %u\n", tok[i].start);
@@ -156,6 +161,8 @@ flag_t config_read(char *filename) {
 		strncpy(config_server_contact_str, server_contact_str, sizeof(config_server_contact_str));
 	if (max_lastheard_entry_count_str[0])
 		config_max_lastheard_entry_count = atoi(max_lastheard_entry_count_str);
+	if (max_api_clients_str[0])
+		config_max_api_clients = atoi(max_api_clients_str);
 
 	return 1;
 }

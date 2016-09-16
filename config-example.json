@@ -3,6 +3,7 @@
   "ipv4-only": 1,
   "bind-ip": "0.0.0.0",
   "max-clients": 1000,
+  "max-api-clients": 100,
   "client-login-timeout-sec": 10,
   "client-timeout-sec": 30,
   "server-password": "",
