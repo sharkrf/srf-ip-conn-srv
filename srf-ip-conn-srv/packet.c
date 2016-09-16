@@ -349,7 +349,7 @@ static void packet_process_c4fm(server_sock_received_packet_t *received_packet) 
 	if (!client)
 		return;
 
-	if (!srf_ip_conn_packet_hmac_check(client->token, config_server_password_str, packet, sizeof(srf_ip_conn_data_dstar_payload_t)))
+	if (!srf_ip_conn_packet_hmac_check(client->token, config_server_password_str, packet, sizeof(srf_ip_conn_data_c4fm_payload_t)))
 		return;
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);

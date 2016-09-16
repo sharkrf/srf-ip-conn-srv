@@ -48,7 +48,6 @@ void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_
 
 	// If the first entry matches the client and call session ids, we only update it's timestamp.
 	if (lastheards != NULL && lastheards->id == client_id && lastheards->call_session_id == call_session_id) {
-		printf("update %.8x\n", call_session_id);
 		lastheards->at = time(NULL);
 		lastheards->mode = mode;
 		lastheards->duration = duration;
@@ -67,7 +66,6 @@ void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_
 
 	newentry = (lastheard_entry_t *)calloc(sizeof(lastheard_entry_t), 1);
 
-	printf("add %.8x\n", call_session_id);
 	newentry->id = client_id;
 	newentry->call_session_id = call_session_id;
 	newentry->at = time(NULL);
