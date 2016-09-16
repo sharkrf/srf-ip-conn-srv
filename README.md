@@ -1,11 +1,12 @@
 # SharkRF IP Connector Protocol server
 
-This daemon can be used to create your own private radio network. You can
-connect to this server using the
-[SharkRF IP Connector Protocol](https://github.com/sharkrf/srf-ip-conn).
-All connected and logged in clients receive the data you send to the server.
+This daemon can be used to create your own private radio network using
+SharkRF devices like [openSPOT](sharkrf.com/openspot), or your own custom
+software/hardware, as the
+[SharkRF IP Connector Protocol](https://github.com/sharkrf/srf-ip-conn)
+is open source.
 
-Currently only [openSPOT](sharkrf.com/openspot) supports this protocol.
+All connected and logged in clients receive the data you send to the server.
 
 Pull requests are welcome!
 
@@ -75,9 +76,12 @@ Available configuration options:
 - **server-contact**: contact info for the server, this is displayed on the
   dashboard. The default value is empty.
 
-## Dashboard (TODO)
+## Dashboard
+![Dashboard](https://cdn.rawgit.com/sharkrf/srf-ip-conn-srv/master/contrib/screenshot.png)
+
 The server has a web-based dashboard. In order to use it, you need to serve
-the *dashboard* directory with your web server.
+the *dashboard* directory with your web server. Copy *config-example.inc.php*
+to *config.inc.php* and edit the *$config_api_socket_file* setting, if needed.
 
 The web interface periodically queries data from the PHP scripts, which
 interact with the running srf-ip-conn-srv process with JSON requests and
