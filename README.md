@@ -105,17 +105,15 @@ Valid **req** values:
 	"req": "client-list",
 	"list":
 	[
-		{"id":2161005,"last-data-pkt-at":0,"got-config":1},
-		{"id":2161006,"last-data-pkt-at":0,"got-config":0}
+		{"id":2161005,"last-pkt-at":0,"got-config":1},
+		{"id":2161006,"last-pkt-at":0,"got-config":0}
 	]
 }
 ```
 
-  Each client has it's own entry in the "list" array. The "last-data-pkt-at"
-  field has the value of the last valid data packet (raw, DMR, D-STAR, C4FM)
-  received in Unix timestamp. It's 0 if no data packet has been received from
-  the client yet. If the server has config information from the client,
-  "got-config" is 1.
+  Each client has it's own entry in the "list" array. The "last-pkt-at"
+  field has the value of the last valid packet received in Unix timestamp.
+  If the server has config information from the client, "got-config" is 1.
 
 - **server-details**: requests server info. The response looks like this:
 

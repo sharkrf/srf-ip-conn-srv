@@ -81,11 +81,11 @@ function srf_connected_clients_update() {
 	srf_req('api.php?req=client-list', function(response) {
 		$('#client-list tbody tr').remove();
 		$.each(response.list, function(key, value) {
-			var last_data_pkt_at;
-			if (value['last-data-pkt-at'] == 0)
-				last_data_pkt_at = 'N/A';
+			var last_pkt_at;
+			if (value['last-pkt-at'] == 0)
+				last_pkt_at = 'N/A';
 			else {
-				last_data_pkt_at = new Date(value['last-data-pkt-at'] * 1000).toLocaleString('en-GB', {
+				last_pkt_at = new Date(value['last-pkt-at'] * 1000).toLocaleString('en-GB', {
 					day: 'numeric',
 					month: 'short',
 					year: 'numeric',
@@ -103,7 +103,7 @@ function srf_connected_clients_update() {
 
 			$('#client-list tbody').append('<tr>' +
 				'<td>' + value.id + '</td>' +
-				'<td>' + last_data_pkt_at + '</td>' +
+				'<td>' + last_pkt_at + '</td>' +
 				'<td>' + gotconfig + '</td>' +
 				'</tr>');
 		});
@@ -152,11 +152,13 @@ function srf_lastheard_update() {
 				case 3: mode = 'C4FM'; break;
 				default: mode = 'Unknown'; break;
 			}
-			var duration = value['duration'];
-			if (duration >= 60)
-				duration = Math.round(duration/60) + ' min ' + duration % 60 + ' sec';
+			var duration;
+			var minutes = Math.floor(value['duration']/60);
+			var seconds = value['duration']-minutes*60;
+			if (minutes)
+				duration = minutes + ' min ' + seconds + ' sec';
 			else
-				duration = duration + ' sec';
+				duration = seconds + ' sec';
 
 			if (i == 0 && in_call)
 				duration += ' <span class="in-call">(in call)</span>';
