@@ -154,9 +154,9 @@ function srf_lastheard_update() {
 			}
 			var duration = value['duration'];
 			if (duration >= 60)
-				duration = Math.round(duration/60) + ' min. ' + duration % 60 + ' sec.';
+				duration = Math.round(duration/60) + ' min ' + duration % 60 + ' sec';
 			else
-				duration = duration + ' sec.';
+				duration = duration + ' sec';
 
 			if (i == 0 && in_call)
 				duration += ' <span class="in-call">(in call)</span>';

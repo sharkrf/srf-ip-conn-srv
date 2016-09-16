@@ -201,7 +201,7 @@ int main(int argc, char **argv) {
 	if (main_flags.run_in_foreground)
 		openlog(NULL, LOG_PERROR | LOG_CONS, LOG_DAEMON);
 	else
-		openlog(NULL, 0, LOG_DAEMON);
+		openlog(NULL, LOG_PID, LOG_DAEMON);
 
 	if (!config_read(main_configfile)) {
 		closelog();
