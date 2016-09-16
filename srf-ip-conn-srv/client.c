@@ -171,6 +171,7 @@ client_t *client_login_add(uint32_t client_id, struct sockaddr *from_addr) {
 		newclient->token[i] = rand();
 	memcpy(&newclient->from_addr, from_addr, sizeof(struct sockaddr));
 	newclient->last_valid_packet_got_at = time(NULL);
+	newclient->rx_seqnum = newclient->tx_seqnum = 0xffffffff;
 
 	if (clients_login == NULL)
 		clients_login = newclient;
@@ -236,11 +237,20 @@ void client_delete(client_t *client) {
 	free(client);
 }
 
-void client_broadcast(client_t *from_client, srf_ip_conn_packet_t *packet, uint16_t data_len, uint16_t payload_len) {
+void client_broadcast(client_t *from_client, srf_ip_conn_packet_t *packet, uint16_t data_len,
+		uint16_t payload_len, uint32_t missing_packets_num)
+{
 	client_t *cp = clients;
 
 	while (cp) {
 		if (cp != from_client) {
+			cp->tx_seqnum = cp->tx_seqnum + 1 + missing_packets_num;
+			switch (packet->header.packet_type) {
+				case SRF_IP_CONN_PACKET_TYPE_DATA_RAW: packet->data_raw.seq_no = htonl(cp->tx_seqnum); break;
+				case SRF_IP_CONN_PACKET_TYPE_DATA_DMR: packet->data_dmr.seq_no = htonl(cp->tx_seqnum); break;
+				case SRF_IP_CONN_PACKET_TYPE_DATA_DSTAR: packet->data_dstar.seq_no = htonl(cp->tx_seqnum); break;
+				case SRF_IP_CONN_PACKET_TYPE_DATA_C4FM: packet->data_c4fm.seq_no = htonl(cp->tx_seqnum); break;
+			}
 			srf_ip_conn_packet_hmac_add(cp->token, config_server_password_str, packet, payload_len);
 
 			server_sock_send((uint8_t *)packet, data_len, &cp->from_addr);

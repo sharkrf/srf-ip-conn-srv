@@ -187,9 +187,18 @@ static void packet_process_close(server_sock_received_packet_t *received_packet)
 	client_delete(client);
 }
 
+static uint32_t packet_get_missing_packet_count(uint32_t new_seq_no, uint32_t old_seq_no) {
+	old_seq_no++;
+	if (new_seq_no >= old_seq_no)
+		return new_seq_no-old_seq_no;
+	else
+		return (0xffffffff-old_seq_no)+new_seq_no;
+}
+
 static void packet_process_raw(server_sock_received_packet_t *received_packet) {
 	srf_ip_conn_packet_t *packet = (srf_ip_conn_packet_t *)received_packet->buf;
 	client_t *client;
+	uint32_t rx_seqnum;
 
 	if (received_packet->received_bytes != sizeof(srf_ip_conn_packet_header_t) + sizeof(srf_ip_conn_data_raw_payload_t))
 		return;
@@ -203,12 +212,16 @@ static void packet_process_raw(server_sock_received_packet_t *received_packet) {
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 	lastheard_add(client->client_id, LASTHEARD_MODE_RAW);
-	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_raw_payload_t));
+	rx_seqnum = ntohl(packet->data_raw.seq_no);
+	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_raw_payload_t),
+			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+	client->rx_seqnum = rx_seqnum;
 }
 
 static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 	srf_ip_conn_packet_t *packet = (srf_ip_conn_packet_t *)received_packet->buf;
 	client_t *client;
+	uint32_t rx_seqnum;
 
 	if (received_packet->received_bytes != sizeof(srf_ip_conn_packet_header_t) + sizeof(srf_ip_conn_data_dmr_payload_t))
 		return;
@@ -222,12 +235,16 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 	lastheard_add(client->client_id, LASTHEARD_MODE_DMR);
-	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dmr_payload_t));
+	rx_seqnum = ntohl(packet->data_dmr.seq_no);
+	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dmr_payload_t),
+			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+	client->rx_seqnum = rx_seqnum;
 }
 
 static void packet_process_dstar(server_sock_received_packet_t *received_packet) {
 	srf_ip_conn_packet_t *packet = (srf_ip_conn_packet_t *)received_packet->buf;
 	client_t *client;
+	uint32_t rx_seqnum;
 
 	if (received_packet->received_bytes != sizeof(srf_ip_conn_packet_header_t) + sizeof(srf_ip_conn_data_dstar_payload_t))
 		return;
@@ -241,12 +258,16 @@ static void packet_process_dstar(server_sock_received_packet_t *received_packet)
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 	lastheard_add(client->client_id, LASTHEARD_MODE_DSTAR);
-	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dstar_payload_t));
+	rx_seqnum = ntohl(packet->data_dstar.seq_no);
+	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dstar_payload_t),
+			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+	client->rx_seqnum = rx_seqnum;
 }
 
 static void packet_process_c4fm(server_sock_received_packet_t *received_packet) {
 	srf_ip_conn_packet_t *packet = (srf_ip_conn_packet_t *)received_packet->buf;
 	client_t *client;
+	uint32_t rx_seqnum;
 
 	if (received_packet->received_bytes != sizeof(srf_ip_conn_packet_header_t) + sizeof(srf_ip_conn_data_c4fm_payload_t))
 		return;
@@ -260,7 +281,10 @@ static void packet_process_c4fm(server_sock_received_packet_t *received_packet) 
 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 	lastheard_add(client->client_id, LASTHEARD_MODE_C4FM);
-	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_c4fm_payload_t));
+	rx_seqnum = ntohl(packet->data_c4fm.seq_no);
+	client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_c4fm_payload_t),
+			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+	client->rx_seqnum = rx_seqnum;
 }
 
 void packet_process(server_sock_received_packet_t *received_packet) {

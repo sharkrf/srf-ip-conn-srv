@@ -14,6 +14,8 @@ typedef struct clients {
     struct sockaddr from_addr;
     time_t last_valid_packet_got_at;
     time_t last_data_packet_at;
+    uint32_t rx_seqnum;
+    uint32_t tx_seqnum;
 
     flag_t got_config;
     srf_ip_conn_config_payload_t config;
@@ -46,7 +48,8 @@ void client_login_delete(client_t *client, flag_t free_allocated_memory);
 client_t *client_search(struct sockaddr *from_addr);
 void client_add(client_t *client);
 void client_delete(client_t *client);
-void client_broadcast(client_t *from_client, srf_ip_conn_packet_t *packet, uint16_t data_len, uint16_t payload_len);
+void client_broadcast(client_t *from_client, srf_ip_conn_packet_t *packet, uint16_t data_len,
+		uint16_t payload_len, uint32_t missing_packets_num);
 
 void client_process(void);
 
