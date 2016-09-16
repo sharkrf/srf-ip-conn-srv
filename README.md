@@ -1,8 +1,8 @@
 # SharkRF IP Connector Protocol server
 
 This daemon can be used to create your own private radio network using
-SharkRF devices like [openSPOT](sharkrf.com/openspot), or your own custom
-software/hardware, as the
+SharkRF devices like [openSPOT](https://sharkrf.com/openspot), or your
+own custom software/hardware, as the
 [SharkRF IP Connector Protocol](https://github.com/sharkrf/srf-ip-conn)
 is open source.
 
