@@ -277,6 +277,7 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 		client_in_call = client;
 		client_in_call_started_at = time(NULL);
 	}
+	data_pkt = 0;
 	switch (packet->data_dmr.slot_type) {
 		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_CSBK:
 		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_DATA_HEADER:
