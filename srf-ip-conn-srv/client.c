@@ -107,8 +107,9 @@ char *client_build_list_json(void) {
 			resp += printed_chars;
 		}
 
-		printed_chars = snprintf(res+resp, res_remaining_size, "{\"id\":%u,\"last-pkt-at\":%lu,\"got-config\":%u}",
-				cp->client_id, cp->last_valid_packet_got_at, cp->got_config);
+		printed_chars = snprintf(res+resp, res_remaining_size,
+				"{\"id\":%u,\"last-pkt-at\":%lu,\"got-config\":%u,\"callsign\":\"%s\"}",
+				cp->client_id, cp->last_valid_packet_got_at, cp->got_config, cp->config.operator_callsign);
 		res_remaining_size -= printed_chars;
 		if (res_remaining_size <= 0)
 			break;

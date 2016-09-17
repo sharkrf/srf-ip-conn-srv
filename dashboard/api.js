@@ -1,6 +1,7 @@
 var srf_ajax_last_retry_at = new Date();
 var srf_timer_uptime = null;
 var srf_server_uptime;
+var srf_callsigns = [];
 
 function srf_ajax(url, success, error, always) {
 	return $.ajax({
@@ -97,12 +98,14 @@ function srf_connected_clients_update() {
 			var gotconfig;
 			if (value['got-config'] == 0)
 				gotconfig = 'N/A';
-			else
+			else {
 				gotconfig = '<button type="button" class="btn btn-sm btn-info" ' +
 					'onclick="javascript:srf_showinfo(' + value.id + ')">Info</button>';
+				srf_callsigns[value.id] = value.callsign;
+			}
 
 			$('#client-list tbody').append('<tr>' +
-				'<td>' + value.id + '</td>' +
+				'<td>' + value.id + (value['got-config'] ? ' (' + value.callsign + ')' : '') + '</td>' +
 				'<td>' + last_pkt_at + '</td>' +
 				'<td>' + gotconfig + '</td>' +
 				'</tr>');
@@ -164,7 +167,7 @@ function srf_lastheard_update() {
 				duration += ' <span class="in-call">(in call)</span>';
 
 			$('#last-heard tbody').append('<tr>' +
-				'<td>' + value['id'] + '</td>' +
+				'<td>' + value.id + (srf_callsigns[value.id] != undefined ? ' (' + srf_callsigns[value.id] + ')' : '') + '</td>' +
 				'<td>' + at + '</td>' +
 				'<td>' + mode + '</td>' +
 				'<td>' + duration + '</td>' +

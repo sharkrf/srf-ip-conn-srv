@@ -105,8 +105,8 @@ Valid **req** values:
 	"req": "client-list",
 	"list":
 	[
-		{"id":2161005,"last-pkt-at":0,"got-config":1},
-		{"id":2161006,"last-pkt-at":0,"got-config":0}
+		{"id":2161005,"last-pkt-at":0,"got-config":1,"callsign":"HA2NON"},
+		{"id":2161006,"last-pkt-at":0,"got-config":0,"callsign":""}
 	]
 }
 ```
