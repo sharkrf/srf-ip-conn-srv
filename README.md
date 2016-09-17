@@ -80,7 +80,6 @@ Available configuration options:
   dashboard. The default value is empty.
 - **allow-simultaneous-calls**: by default, the server allows only one client
   to transmit at a time. You can disable this behavior by setting this to 1.
-  Set this to 1 if you want to send/receive DMR data over the server.
 
 ## Dashboard
 ![Dashboard](https://cdn.rawgit.com/sharkrf/srf-ip-conn-srv/master/contrib/screenshot.png)

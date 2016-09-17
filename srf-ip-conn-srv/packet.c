@@ -256,6 +256,7 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 	srf_ip_conn_packet_t *packet = (srf_ip_conn_packet_t *)received_packet->buf;
 	client_t *client;
 	uint32_t rx_seqnum;
+	flag_t data_pkt;
 
 	if (received_packet->received_bytes != sizeof(srf_ip_conn_packet_header_t) + sizeof(srf_ip_conn_data_dmr_payload_t))
 		return;
@@ -276,12 +277,19 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 		client_in_call = client;
 		client_in_call_started_at = time(NULL);
 	}
-	if (client_in_call == client || config_allow_simultaneous_calls) {
+	switch (packet->data_dmr.slot_type) {
+		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_CSBK:
+		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_DATA_HEADER:
+		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_RATE_12_DATA:
+		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_RATE_34_DATA:
+			data_pkt = 1;
+	}
+	if (client_in_call == client || config_allow_simultaneous_calls || data_pkt) {
 		lastheard_add(client->client_id, packet->data_dmr.call_session_id, LASTHEARD_MODE_DMR, time(NULL)-client_in_call_started_at);
 		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dmr_payload_t),
 			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
-		if (packet->data_dmr.slot_type == SRF_IP_CONN_DATA_DMR_SLOT_TYPE_TERMINATOR_WITH_LC) {
+		if (packet->data_dmr.slot_type == SRF_IP_CONN_DATA_DMR_SLOT_TYPE_TERMINATOR_WITH_LC || data_pkt) {
 			syslog(LOG_INFO, "packet: client %u dmr call end, sid: %.8x, duration %lu sec.\n", client->client_id,
 					ntohl(packet->data_dmr.call_session_id), time(NULL)-client_in_call_started_at);
 			client_in_call = NULL;
