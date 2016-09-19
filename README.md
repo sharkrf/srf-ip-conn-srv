@@ -80,6 +80,9 @@ Available configuration options:
   dashboard. The default value is empty.
 - **allow-simultaneous-calls**: by default, the server allows only one client
   to transmit at a time. You can disable this behavior by setting this to 1.
+- **banlist-file**: if you want to use a ban list, you can specify it's
+  filename here. You can ban client IDs and/or IP addresses. See
+  *banlist-example.json* for an example structure for the ban list file.
 
 ## Dashboard
 ![Dashboard](https://cdn.rawgit.com/sharkrf/srf-ip-conn-srv/master/contrib/screenshot.png)
