@@ -230,7 +230,7 @@ int main(int argc, char **argv) {
 	signal(SIGTERM, main_sighandler);
 	signal(SIGPIPE, SIG_IGN);
 
-	if (config_banlist_file_str)
+	if (config_banlist_file_str[0])
 		banlist_load(config_banlist_file_str);
 
 	if ((main_server_sock_fd = server_sock_init(config_port, config_ipv4_only, config_bind_ip_str)) < 0) {
