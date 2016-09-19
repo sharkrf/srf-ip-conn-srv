@@ -88,4 +88,6 @@ ADD_EXECUTABLE(	${APP_NAME}
 	${SRC_DIR}/githash.h
 	${SRC_DIR}/lastheard.h
 	${SRC_DIR}/lastheard.c
+	${SRC_DIR}/banlist.h
+	${SRC_DIR}/banlist.c
 )

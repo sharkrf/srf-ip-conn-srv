@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 #include "config.h"
 #include "client.h"
 #include "lastheard.h"
+#include "banlist.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -46,6 +47,19 @@ static void packet_process_login(server_sock_received_packet_t *received_packet)
 
 	if (clients_count+clients_login_count+1 > config_max_clients) {
 		syslog(LOG_INFO, "packet: client %u %s:%u: ignoring login packet, server full\n", ntohl(packet->login.client_id),
+				inet_ntop(received_packet->from_addr.sa_family, sock_get_in_addr(&received_packet->from_addr), s, sizeof(s)),
+				sock_get_port(&received_packet->from_addr));
+		return;
+	}
+
+	if (banlist_is_banned_client_id(ntohl(packet->login.client_id))) {
+		syslog(LOG_INFO, "packet: client %u %s:%u: ignoring login packet, client id banned\n", ntohl(packet->login.client_id),
+				inet_ntop(received_packet->from_addr.sa_family, sock_get_in_addr(&received_packet->from_addr), s, sizeof(s)),
+				sock_get_port(&received_packet->from_addr));
+		return;
+	}
+	if (banlist_is_banned_client_ip(&received_packet->from_addr)) {
+		syslog(LOG_INFO, "packet: client %u %s:%u: ignoring login packet, client ip banned\n", ntohl(packet->login.client_id),
 				inet_ntop(received_packet->from_addr.sa_family, sock_get_in_addr(&received_packet->from_addr), s, sizeof(s)),
 				sock_get_port(&received_packet->from_addr));
 		return;

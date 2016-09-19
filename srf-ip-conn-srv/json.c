@@ -35,6 +35,7 @@ flag_t json_compare_tok_key(const char *request, jsmntok_t *tok, const char *key
 }
 
 void json_get_value(const char *request, jsmntok_t *tok, char *value, size_t value_size) {
-	memcpy(value, request+tok->start, min(value_size-1, tok->end-tok->start));
+	value_size = min(value_size, tok->end-tok->start+1);
+	memcpy(value, request+tok->start, value_size-1);
 	value[value_size-1] = 0;
 }

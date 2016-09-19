@@ -13,5 +13,6 @@
   "server-name": "SharkRF IP Connector Protocol Server",
   "server-desc": "",
   "server-contact": "",
-  "allow-simultaneous-calls": 0
+  "allow-simultaneous-calls": 0,
+  "banlist-file": "banlist.json"
 }

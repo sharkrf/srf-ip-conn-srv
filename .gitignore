@@ -12,3 +12,4 @@ Debug
 Release
 Makefile
 config.inc.php
+banlist.json
