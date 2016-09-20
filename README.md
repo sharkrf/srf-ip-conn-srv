@@ -84,6 +84,13 @@ Available configuration options:
   filename here. You can ban client IDs and/or IP addresses. See
   *banlist-example.json* for an example structure for the ban list file.
 
+You can reload the config file and the banlist without restarting the server
+by sending SIGHUP to the process:
+
+```
+killall -HUP srf-ip-conn-srv
+```
+
 ## Dashboard
 ![Dashboard](https://cdn.rawgit.com/sharkrf/srf-ip-conn-srv/master/contrib/screenshot.png)
 
