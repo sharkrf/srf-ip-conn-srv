@@ -78,6 +78,8 @@ void client_delete(client_t *client);
 void client_broadcast(client_t *from_client, srf_ip_conn_packet_t *packet, uint16_t data_len,
 		uint16_t payload_len, uint32_t missing_packets_num);
 
+void client_check_banlist(void);
+
 void client_process(void);
 
 #endif

@@ -42,11 +42,12 @@ DEALINGS IN THE SOFTWARE.
 #define MAIN_FORK_RESULT_ERROR			2
 typedef int main_fork_result_t;
 
-static struct {
+static volatile struct {
 	flag_t run_in_foreground	: 1;
 	flag_t sigexit				: 1;
 	flag_t sigint_received		: 1;
 	flag_t sigterm_received		: 1;
+	flag_t sighup_received		: 1;
 } main_flags = {0,};
 
 static char *main_configfile = "config.json";
@@ -71,6 +72,9 @@ static void main_sighandler(int signal) {
 			}
 			main_flags.sigterm_received = 1;
 			main_flags.sigexit = 1;
+			break;
+		case SIGHUP:
+			main_flags.sighup_received = 1;
 			break;
 	}
 }
@@ -145,7 +149,7 @@ static flag_t main_processcommandline(int argc, char **argv) {
 	return 1;
 }
 
-flag_t main_select(void) {
+static void main_select(void) {
 	server_sock_received_packet_t received_packet;
 	fd_set rfds;
 	struct timeval timeout = { .tv_sec = 1, .tv_usec = 0 }; // Blocking only for 1 second.
@@ -164,11 +168,9 @@ flag_t main_select(void) {
 
 	switch (select(maxfd+1, &rfds, NULL, NULL, &timeout)) {
 		case -1:
-			syslog(LOG_ERR, "main: select() error\n");
-			main_flags.sigexit = 1;
-			return 0;
+			break;
 		case 0: // Timeout
-			return 1;
+			break;
 		default:
 			if (FD_ISSET(main_server_sock_fd, &rfds)) {
 				addr_len = sizeof(received_packet.from_addr);
@@ -191,7 +193,7 @@ flag_t main_select(void) {
 			}
 
 			api_process_fd_set(&rfds);
-			return 1;
+			break;
 	}
 }
 
@@ -225,7 +227,7 @@ int main(int argc, char **argv) {
 	main_writepidfile();
 
 	srand(time(NULL));
-	signal(SIGHUP, SIG_IGN);
+	signal(SIGHUP, main_sighandler);
 	signal(SIGINT, main_sighandler);
 	signal(SIGTERM, main_sighandler);
 	signal(SIGPIPE, SIG_IGN);
@@ -247,6 +249,19 @@ int main(int argc, char **argv) {
 
 		client_process();
 		api_process();
+
+		if (main_flags.sighup_received) {
+			syslog(LOG_INFO, "main: sighup, reloading config\n");
+			if (!config_read(main_configfile))
+				syslog(LOG_ERR, "main: config reload error\n");
+
+			if (config_banlist_file_str[0]) {
+				syslog(LOG_INFO, "main: reloading banlist\n");
+				banlist_load(config_banlist_file_str);
+				client_check_banlist();
+			}
+			main_flags.sighup_received = 0;
+		}
 	}
 
 	close(main_api_sock_fd);

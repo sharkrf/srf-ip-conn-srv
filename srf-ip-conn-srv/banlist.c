@@ -51,6 +51,27 @@ static banlist_client_id_entry_t *banlist_client_ids = NULL;
 static banlist_client_ip_entry_t *banlist_client_ips = NULL;
 static int banlist_entry_count = 0;
 
+static void banlist_clear(void) {
+	banlist_client_id_entry_t *cid = banlist_client_ids;
+	banlist_client_id_entry_t *cid_prev;
+	banlist_client_ip_entry_t *cip = banlist_client_ips;
+	banlist_client_ip_entry_t *cip_prev;
+
+	while (cid) {
+		cid_prev = cid;
+		cid = cid->next;
+		free(cid_prev);
+	}
+	banlist_client_ids = NULL;
+
+	while (cip) {
+		cip_prev = cip;
+		cip = cip->next;
+		free(cip_prev);
+	}
+	banlist_client_ips = NULL;
+}
+
 static void banlist_add_client_id(uint32_t client_id) {
 	banlist_client_id_entry_t *newentry;
 
@@ -237,6 +258,8 @@ void banlist_load(char *filename) {
 		return;
 	}
 
+	banlist_clear();
+
 	for (i = 1; i < json_entry_count; i++) {
 		if (json_compare_tok_key(buf, &tok[i], "client-ids")) {
 			parsing = PARSING_IDS;
@@ -271,5 +294,4 @@ void banlist_load(char *filename) {
 	}
 
 	free(buf);
-
 }

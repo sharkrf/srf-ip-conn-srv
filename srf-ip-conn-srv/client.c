@@ -26,6 +26,7 @@ DEALINGS IN THE SOFTWARE.
 #include "client.h"
 #include "config.h"
 #include "server-sock.h"
+#include "banlist.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -283,6 +284,31 @@ void client_broadcast(client_t *from_client, srf_ip_conn_packet_t *packet, uint1
 			srf_ip_conn_packet_hmac_add(cp->token, config_server_password_str, packet, payload_len);
 
 			server_sock_send((uint8_t *)packet, data_len, &cp->from_addr);
+		}
+		cp = cp->next;
+	}
+}
+
+void client_check_banlist(void) {
+	client_t *cp = clients;
+	char s[INET6_ADDRSTRLEN];
+
+	while (cp) {
+		if (banlist_is_banned_client_id(cp->client_id)) {
+			syslog(LOG_INFO, "client: client id %u ip %s:%u banned client id, removing\n", cp->client_id,
+					inet_ntop(cp->from_addr.sa_family, sock_get_in_addr(&cp->from_addr), s, sizeof(s)),
+					sock_get_port(&cp->from_addr));
+			client_delete(cp);
+			cp = clients;
+			continue;
+		}
+		if (banlist_is_banned_client_ip(&cp->from_addr)) {
+			syslog(LOG_INFO, "client: client id %u ip %s:%u banned ip, removing\n", cp->client_id,
+					inet_ntop(cp->from_addr.sa_family, sock_get_in_addr(&cp->from_addr), s, sizeof(s)),
+					sock_get_port(&cp->from_addr));
+			client_delete(cp);
+			cp = clients;
+			continue;
 		}
 		cp = cp->next;
 	}
