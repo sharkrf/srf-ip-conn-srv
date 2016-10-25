@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <signal.h>
 #include <syslog.h>
 #include <sys/stat.h>
+#include <sys/select.h>
 #include <time.h>
 
 #define MAIN_FORK_RESULT_OK				0
