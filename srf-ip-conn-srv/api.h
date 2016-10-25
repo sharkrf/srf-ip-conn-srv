@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <time.h>
 #include <stdlib.h>
+#include <sys/select.h>
 
 typedef struct api_client {
 	int sock;
