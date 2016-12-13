@@ -95,8 +95,9 @@ killall -HUP srf-ip-conn-srv
 ![Dashboard](https://cdn.rawgit.com/sharkrf/srf-ip-conn-srv/master/contrib/screenshot.png)
 
 The server has a web-based dashboard. In order to use it, you need to serve
-the *dashboard* directory with your web server. Copy *config-example.inc.php*
-to *config.inc.php* and edit the *$config_api_socket_file* setting, if needed.
+the *dashboard* directory with your web server. Make sure your webserver has
+the *PHP module installed and enabled*! Copy *config-example.inc.php* to
+*config.inc.php* and edit the *$config_api_socket_file* setting, if needed.
 
 The web interface periodically queries data from the PHP scripts, which
 interact with the running srf-ip-conn-srv process with JSON requests and
