@@ -1,0 +1,11 @@
+#title {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	font-size: 36px;
+	font-weight: 500;
+}
+#title img {
+	margin-right: 15px;
+	vertical-align: text-bottom;
+}
+.in-call { color: green; }

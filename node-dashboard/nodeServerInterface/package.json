@@ -1,0 +1,20 @@
+{
+  "name": "api-connector",
+  "version": "1.0.0",
+  "description": "Connects to the openSpot server API",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Landon Lamb",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.1",
+    "net": "^1.0.2"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "socket",
+    "test"
+  ]
+}
