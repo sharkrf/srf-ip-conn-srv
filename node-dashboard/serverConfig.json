@@ -1,4 +1,0 @@
-{
-    "nodeServerIP": "localhost", // ex. localhost, 127.0.0.1
-    "nodeServerPort": "8081" // nodeServerInterface defaults to 8081
-}

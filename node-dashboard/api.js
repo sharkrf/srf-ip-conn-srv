@@ -1,10 +1,11 @@
-var config = require('./serverConfig.json');
+var nodeServerIP = "127.0.0.1"; // IP Address/hostname that is accessible through internet
+var nodeServerPort ="8081"; //port the nodeServerInterface is hosted on 8081 by defaul
 
 var srf_ajax_last_retry_at = new Date();
 var srf_timer_uptime = null;
 var srf_server_uptime;
 var srf_callsigns = [];
-var nodeConnectionURL = config.nodeServerIP + ':' + config.nodeServerPort;
+var nodeConnectionURL = 'http://' + nodeServerIP + ':' + nodeServerPort;
 
 function srf_ajax(url, success, error, always) {
 	return $.ajax({

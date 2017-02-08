@@ -13,7 +13,7 @@ node app
 
 ---------------
 
-Now modify the serverConfig.json file to point to the location of the node application that was started.
+Now modify the top two lines of the api.js file to point to the location of the node application that was started previously.
 
 Now the data is populated on the index page is being pulled through the NodeJS application.
 
