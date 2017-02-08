@@ -1,0 +1,128 @@
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="icon" type="image/x-icon" href="favicon.ico"/>
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.8.0/css/alertify.min.css"/>
+		<link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.8.0/css/themes/bootstrap.min.css"/>
+		<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		<script src="//cdn.jsdelivr.net/alertifyjs/1.8.0/alertify.min.js"></script>
+		<title>SharkRF IP Connector Protocol Server Dashboard</title>
+	</head>
+
+	<body>
+	    <div class="container-fluid">
+	    	<div id="title">
+	    		<img src="srflogo.png" />
+	    		SharkRF IP Connector Protocol Server Dashboard
+	    	</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Server info</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-6">Name:</div>
+						<div class="col-sm-6" id="server-name">Loading...</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6">Description:</div>
+						<div class="col-sm-6" id="server-desc">Loading...</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6">Contact:</div>
+						<div class="col-sm-6" id="server-contact">Loading...</div>
+					</div>
+					<hr/>
+					<div class="row">
+						<div class="col-sm-6">Git hash:</div>
+						<div class="col-sm-6" id="server-githash">Loading...</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6">Uptime:</div>
+						<div class="col-sm-6" id="server-uptime">Loading...</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Connected clients</h3>
+				</div>
+				<div class="panel-body">
+					<table class="table table-striped table-condensed" id="client-list">
+						<thead>
+						<tr>
+							<th>ID</th>
+							<th>Last packet at</th>
+							<th>Info</th>
+						</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Last heard</h3>
+				</div>
+				<div class="panel-body">
+					<table class="table table-striped table-condensed" id="last-heard">
+						<thead>
+						<tr>
+							<th>ID</th>
+							<th>At</th>
+							<th>Mode</th>
+							<th>Call duration</th>
+						</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div id="client-info" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Client info</h4>
+					</div>
+					<div class="modal-body">
+						<table class="table table-striped table-condensed">
+							<tr><td>ID</td><td id="client-info-id"></td></tr>
+							<tr><td>Operator callsign</td><td id="client-info-operator-callsign"></td></tr>
+							<tr><td>HW manufacturer</td><td id="client-info-hw-manufacturer"></td></tr>
+							<tr><td>HW model</td><td id="client-info-hw-model"></td></tr>
+							<tr><td>HW version</td><td id="client-info-hw-version"></td></tr>
+							<tr><td>SW version</td><td id="client-info-sw-version"></td></tr>
+							<tr><td>RX frequency</td><td id="client-info-rx-frequency"></td></tr>
+							<tr><td>TX frequency</td><td id="client-info-tx-frequency"></td></tr>
+							<tr><td>TX power</td><td id="client-info-tx-power"></td></tr>
+							<tr><td>Latitude</td><td id="client-info-latitude"></td></tr>
+							<tr><td>Longitude</td><td id="client-info-longitude"></td></tr>
+							<tr><td>Height (AGL)</td><td id="client-info-height"></td></tr>
+							<tr><td>Location</td><td id="client-info-location"></td></tr>
+							<tr><td>Description</td><td id="client-info-description"></td></tr>
+							</tr>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="api.js"></script>
+	<body>
+</html>
