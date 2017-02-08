@@ -1,4 +1,4 @@
-var config = require('./serverConfig.json')
+var config = require('./serverConfig.json');
 
 var srf_ajax_last_retry_at = new Date();
 var srf_timer_uptime = null;

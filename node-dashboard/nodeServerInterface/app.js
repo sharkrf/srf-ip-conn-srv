@@ -17,7 +17,7 @@ function sendRequest(request) {
 }
 
 app.listen(config.hostPort, () => {
-  console.log('Server started - listening on port 8081');
+  console.log(`Server started - listening on port ${config.hostPort}`);
 });
 
 app.get('/serverDetails', (req, res) => {
