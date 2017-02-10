@@ -1,0 +1,4 @@
+{
+    "apiSocketFile": "/tmp/srf-ip-conn-srv.socket",
+    "hostPort": "8081"
+}
