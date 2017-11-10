@@ -8,4 +8,6 @@ COPY . /srf-ip-conn-srv
 
 RUN cd /srf-ip-conn-srv/build && JSMN_PATH="/jsmn" SRF_IP_CONN_PATH="/srf-ip-conn" ./build-release.sh
 
+EXPOSE 65100/udp
+
 ENTRYPOINT ["/srf-ip-conn-srv/build/Release/srf-ip-conn-srv",  "-f",  "-c", "/srf-ip-conn-srv/config-example.json"]
