@@ -47,6 +47,7 @@ char config_server_contact_str[255] = {0,};
 uint16_t config_max_lastheard_entry_count = 30;
 uint16_t config_max_api_clients = 100;
 uint16_t config_client_call_timeout_sec = 3;
+uint16_t config_client_status_syslog_interval = 30;
 flag_t config_allow_simultaneous_calls = 0;
 char config_banlist_file_str[255] = {0,};
 
@@ -55,7 +56,7 @@ flag_t config_read(char *filename) {
 	long fsize;
 	char *buf;
 	jsmn_parser json_parser;
-	jsmntok_t tok[34];
+	jsmntok_t tok[35];
 	int json_entry_count;
 	int i;
 	char port_str[6] = {0,};
@@ -74,6 +75,7 @@ flag_t config_read(char *filename) {
 	char max_lastheard_entry_count_str[6] = {0,};
 	char max_api_clients_str[6] = {0,};
 	char client_call_timeout_sec_str[6] = {0,};
+	char client_status_syslog_interval_str[6] = {0,};
 	char allow_simultaneous_calls_str[2] = {0,};
 	char banlist_file_str[255] = {0,};
 
@@ -158,6 +160,9 @@ flag_t config_read(char *filename) {
 		} else if (json_compare_tok_key(buf, &tok[i], "client-call-timeout-sec")) {
 			json_get_value(buf, &tok[i+1], client_call_timeout_sec_str, sizeof(client_call_timeout_sec_str));
 			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "client-status-syslog-interval")) {
+			json_get_value(buf, &tok[i+1], client_status_syslog_interval_str, sizeof(client_status_syslog_interval_str));
+			i++;
 		} else if (json_compare_tok_key(buf, &tok[i], "allow-simultaneous-calls")) {
 			json_get_value(buf, &tok[i+1], allow_simultaneous_calls_str, sizeof(allow_simultaneous_calls_str));
 			i++;
@@ -205,6 +210,8 @@ flag_t config_read(char *filename) {
 		config_max_api_clients = atoi(max_api_clients_str);
 	if (client_call_timeout_sec_str[0])
 		config_client_call_timeout_sec = atoi(client_call_timeout_sec_str);
+	if (client_status_syslog_interval_str[0])
+		config_client_status_syslog_interval = atoi(client_status_syslog_interval_str);
 	if (allow_simultaneous_calls_str[0])
 		config_allow_simultaneous_calls = (allow_simultaneous_calls_str[0] == '1');
 	if (banlist_file_str[0])
