@@ -6,7 +6,7 @@
   "max-api-clients": 100,
   "client-login-timeout-sec": 10,
   "client-timeout-sec": 30,
-  "client-status-syslog-interval": 30,
+  "client-status-syslog-interval-sec": 30,
   "server-password": "",
   "auth-fail-ip-ignore-sec": 5,
   "pidfile": "srf-ip-conn-srv.pid",

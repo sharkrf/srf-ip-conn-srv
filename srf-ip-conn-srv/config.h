@@ -48,7 +48,7 @@ extern char config_server_contact_str[255];
 extern uint16_t config_max_lastheard_entry_count;
 extern uint16_t config_max_api_clients;
 extern uint16_t config_client_call_timeout_sec;
-extern uint16_t config_client_status_syslog_interval;
+extern uint16_t config_client_status_syslog_interval_sec;
 extern flag_t config_allow_simultaneous_calls;
 extern char config_banlist_file_str[255];
 
