@@ -361,7 +361,7 @@ void client_process(void) {
 		ip = ip->next;
 	}
 
-	if (time(NULL)-last_client_list_log_at > 30) {
+	if (time(NULL)-last_client_list_log_at > config_client_status_syslog_interval_sec) {
 		last_client_list_log_at = time(NULL);
 
 		if (clients == NULL)
