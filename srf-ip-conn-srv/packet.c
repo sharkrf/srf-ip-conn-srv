@@ -286,8 +286,8 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 
 	rx_seqnum = ntohl(packet->data_dmr.seq_no);
 	if (client_in_call == NULL) {
-		syslog(LOG_INFO, "packet: client dmr %u call start, sid: %.8x\n", client->client_id,
-				ntohl(packet->data_dmr.call_session_id));
+		syslog(LOG_INFO, "packet: client dmr %u call start, caller %s, sid: %.8x\n", client->client_id,
+				(char *)packet->data_dmr.src_id, ntohl(packet->data_dmr.call_session_id));
 		client_in_call = client;
 		client_in_call_started_at = time(NULL);
 	}
@@ -305,8 +305,8 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
 		if (packet->data_dmr.slot_type == SRF_IP_CONN_DATA_DMR_SLOT_TYPE_TERMINATOR_WITH_LC || data_pkt) {
-			syslog(LOG_INFO, "packet: client %u dmr call end, sid: %.8x, duration %lu sec.\n", client->client_id,
-					ntohl(packet->data_dmr.call_session_id), time(NULL)-client_in_call_started_at);
+			syslog(LOG_INFO, "packet: client %u dmr call end, caller %s, sid: %.8x, duration %lu sec.\n", client->client_id,
+					(char *)packet->data_dmr.src_id, ntohl(packet->data_dmr.call_session_id), time(NULL)-client_in_call_started_at);
 			client_in_call = NULL;
 		}
 	}
@@ -334,8 +334,8 @@ static void packet_process_dstar(server_sock_received_packet_t *received_packet)
 
 	rx_seqnum = ntohl(packet->data_dstar.seq_no);
 	if (client_in_call == NULL) {
-		syslog(LOG_INFO, "packet: client %u dstar call start, sid: %.8x\n", client->client_id,
-				ntohl(packet->data_dstar.call_session_id));
+		syslog(LOG_INFO, "packet: client %u dstar call start, caller %s, sid: %.8x\n", client->client_id,
+				(char *)packet->data_dstar.src_callsign, ntohl(packet->data_dstar.call_session_id));
 		client_in_call = client;
 		client_in_call_started_at = time(NULL);
 	}
@@ -352,8 +352,8 @@ static void packet_process_dstar(server_sock_received_packet_t *received_packet)
 				got_terminator = 0;
 		}
 		if (got_terminator) {
-			syslog(LOG_INFO, "packet: client %u dstar call end, sid: %.8x, duration %lu sec.\n", client->client_id,
-					ntohl(packet->data_dstar.call_session_id), time(NULL)-client_in_call_started_at);
+			syslog(LOG_INFO, "packet: client %u dstar call end, caller %s, sid: %.8x, duration %lu sec.\n", client->client_id,
+					(char *)packet->data_dstar.src_callsign, ntohl(packet->data_dstar.call_session_id), time(NULL)-client_in_call_started_at);
 			client_in_call = NULL;
 		}
 	}
