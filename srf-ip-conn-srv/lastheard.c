@@ -35,6 +35,7 @@ typedef struct lastheard_entry {
 	lastheard_mode_t mode;
 	time_t duration;
 	uint32_t call_session_id;
+	char * src_callsign;
 
 	struct lastheard_entry *next;
 	struct lastheard_entry *prev;
@@ -43,7 +44,7 @@ typedef struct lastheard_entry {
 static lastheard_entry_t *lastheards = NULL;
 static int lastheards_count = 0;
 
-void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_t mode, time_t duration) {
+void lastheard_add(uint32_t client_id, char * src_callsign, uint32_t call_session_id, lastheard_mode_t mode, time_t duration) {
 	lastheard_entry_t *newentry;
 
 	// If the first entry matches the client and call session ids, we only update it's timestamp.
@@ -71,6 +72,7 @@ void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_
 	newentry->at = time(NULL);
 	newentry->mode = mode;
 	newentry->duration = duration;
+	newentry->src_callsign = src_callsign;
 
 	if (lastheards == NULL)
 		lastheards = newentry;
@@ -110,8 +112,8 @@ char *lastheard_build_list_json(void) {
 			resp += printed_chars;
 		}
 
-		printed_chars = snprintf(res+resp, res_remaining_size, "{\"id\":%u,\"at\":%lu,\"mode\":%u,\"duration\":%lu}",
-				lh->id, lh->at, lh->mode, lh->duration);
+		printed_chars = snprintf(res+resp, res_remaining_size, "{\"id\":%u,\"src_callsign\":%s,\"at\":%lu,\"mode\":%u,\"duration\":%lu}",
+				lh->id, lh->src_callsign, lh->at, lh->mode, lh->duration);
 		res_remaining_size -= printed_chars;
 		if (res_remaining_size <= 0)
 			break;

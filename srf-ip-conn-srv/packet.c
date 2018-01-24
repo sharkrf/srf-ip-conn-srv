@@ -259,7 +259,7 @@ static void packet_process_raw(server_sock_received_packet_t *received_packet) {
 		client_in_call_started_at = time(NULL);
 	}
 	if (client_in_call == client || config_allow_simultaneous_calls) {
-		lastheard_add(client->client_id, packet->data_raw.call_session_id, LASTHEARD_MODE_RAW, time(NULL)-client_in_call_started_at);
+		lastheard_add(client->client_id, NULL, packet->data_raw.call_session_id, LASTHEARD_MODE_RAW, time(NULL)-client_in_call_started_at);
 		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_raw_payload_t),
 			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 	}
@@ -300,7 +300,7 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 			data_pkt = 1;
 	}
 	if (client_in_call == client || config_allow_simultaneous_calls || data_pkt) {
-		lastheard_add(client->client_id, packet->data_dmr.call_session_id, LASTHEARD_MODE_DMR, time(NULL)-client_in_call_started_at);
+		lastheard_add(client->client_id, (char *)packet->data_dmr.src_id, packet->data_dmr.call_session_id, LASTHEARD_MODE_DMR, time(NULL)-client_in_call_started_at);
 		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dmr_payload_t),
 			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
@@ -340,7 +340,7 @@ static void packet_process_dstar(server_sock_received_packet_t *received_packet)
 		client_in_call_started_at = time(NULL);
 	}
 	if (client_in_call == client || config_allow_simultaneous_calls) {
-		lastheard_add(client->client_id, ntohl(packet->data_dstar.call_session_id), LASTHEARD_MODE_DSTAR, time(NULL)-client_in_call_started_at);
+		lastheard_add(client->client_id, (char *)packet->data_dstar.src_callsign, ntohl(packet->data_dstar.call_session_id), LASTHEARD_MODE_DSTAR, time(NULL)-client_in_call_started_at);
 		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dstar_payload_t),
 			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
@@ -379,19 +379,20 @@ static void packet_process_c4fm(server_sock_received_packet_t *received_packet) 
 
 	rx_seqnum = ntohl(packet->data_c4fm.seq_no);
 	if (client_in_call == NULL || config_allow_simultaneous_calls) {
-		syslog(LOG_INFO, "packet: client %u c4fm call start, sid: %.8x\n", client->client_id,
+		syslog(LOG_INFO, "packet: client %u c4fm call start, caller %s, sid: %.8x\n", client->client_id,
+				(char *)packet->data_c4fm.src_callsign,
 				ntohl(packet->data_c4fm.call_session_id));
 		client_in_call = client;
 		client_in_call_started_at = time(NULL);
 	}
 	if (client_in_call == client) {
-		lastheard_add(client->client_id, ntohl(packet->data_c4fm.call_session_id), LASTHEARD_MODE_C4FM, time(NULL)-client_in_call_started_at);
+		lastheard_add(client->client_id, (char *)packet->data_c4fm.src_callsign, ntohl(packet->data_c4fm.call_session_id), LASTHEARD_MODE_C4FM, time(NULL)-client_in_call_started_at);
 		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_c4fm_payload_t),
 			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
 		if (packet->data_c4fm.packet_type == SRF_IP_CONN_DATA_C4FM_PACKET_TYPE_TERMINATOR) {
-			syslog(LOG_INFO, "packet: client %u c4fm call end, sid: %.8x, duration %lu sec.\n", client->client_id,
-					ntohl(packet->data_c4fm.call_session_id), time(NULL)-client_in_call_started_at);
+			syslog(LOG_INFO, "packet: client %u c4fm call end, caller %s, sid: %.8x, duration %lu sec.\n", client->client_id,
+					 (char *)packet->data_c4fm.src_callsign, ntohl(packet->data_c4fm.call_session_id), time(NULL)-client_in_call_started_at);
 			client_in_call = NULL;
 		}
 	}
