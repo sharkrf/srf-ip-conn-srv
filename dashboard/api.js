@@ -168,6 +168,7 @@ function srf_lastheard_update() {
 
 			$('#last-heard tbody').append('<tr>' +
 				'<td>' + value.id + (srf_callsigns[value.id] != undefined ? ' (' + srf_callsigns[value.id] + ')' : '') + '</td>' +
+				'<td>' + value.src_callsign + '</td>' +
 				'<td>' + at + '</td>' +
 				'<td>' + mode + '</td>' +
 				'<td>' + duration + '</td>' +
