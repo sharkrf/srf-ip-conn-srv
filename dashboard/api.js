@@ -167,8 +167,8 @@ function srf_lastheard_update() {
 				duration += ' <span class="in-call">(in call)</span>';
 
 			$('#last-heard tbody').append('<tr>' +
-				'<td>' + value.id + (srf_callsigns[value.id] != undefined ? ' (' + srf_callsigns[value.id] + ')' : '') + '</td>' +
 				'<td>' + value.src_callsign + '</td>' +
+				'<td>' + value.id + (srf_callsigns[value.id] != undefined ? ' (' + srf_callsigns[value.id] + ')' : '') + '</td>' +
 				'<td>' + at + '</td>' +
 				'<td>' + mode + '</td>' +
 				'<td>' + duration + '</td>' +

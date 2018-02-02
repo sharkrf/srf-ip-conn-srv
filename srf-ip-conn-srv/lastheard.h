@@ -36,7 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #define LASTHEARD_MODE_C4FM		3
 typedef uint8_t lastheard_mode_t;
 
-void lastheard_add(uint32_t client_id, char * src_callsign, uint32_t call_session_id, lastheard_mode_t mode, time_t duration);
+void lastheard_add(uint32_t client_id, char *src_callsign, uint32_t call_session_id, lastheard_mode_t mode, time_t duration);
 char *lastheard_build_list_json(void);
 
 #endif
