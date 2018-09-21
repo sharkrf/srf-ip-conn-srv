@@ -17,7 +17,7 @@ function srf_ajax(url, success, error, always) {
 		error: function(xhr, textStatus, errorThrown) {
 			this.tryCount++;
 			if (this.tryCount <= this.retryLimit) {
-                // Try again.
+				// Try again.
 				var d = new Date();
 				if (d.getTime()-srf_ajax_last_retry_at.getTime() < 500) {
 					var query = this;
@@ -29,8 +29,8 @@ function srf_ajax(url, success, error, always) {
 					$.ajax(this).success(success).error(error).always(always);
 					srf_ajax_last_retry_at = new Date();
 				}
-            }
-            return;
+			}
+			return;
 		}
 	}).success(success).error(error).always(always);
 }
@@ -53,7 +53,7 @@ function srf_req(url, success, error, always) {
 }
 
 function srf_pad_time(s) {
-    return (s < 10 ? '0' : '') + s;
+	return (s < 10 ? '0' : '') + s;
 }
 
 function srf_update_server_uptime() {
@@ -157,6 +157,7 @@ function srf_lastheard_update() {
 				case 1: mode = 'DMR'; break;
 				case 2: mode = 'D-STAR'; break;
 				case 3: mode = 'C4FM'; break;
+				case 4: mode = 'NXDN'; break;
 				default: mode = 'Unknown'; break;
 			}
 			var duration;

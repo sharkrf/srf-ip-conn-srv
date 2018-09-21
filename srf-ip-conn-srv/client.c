@@ -280,6 +280,7 @@ void client_broadcast(client_t *from_client, srf_ip_conn_packet_t *packet, uint1
 				case SRF_IP_CONN_PACKET_TYPE_DATA_DMR: packet->data_dmr.seq_no = htonl(cp->tx_seqnum); break;
 				case SRF_IP_CONN_PACKET_TYPE_DATA_DSTAR: packet->data_dstar.seq_no = htonl(cp->tx_seqnum); break;
 				case SRF_IP_CONN_PACKET_TYPE_DATA_C4FM: packet->data_c4fm.seq_no = htonl(cp->tx_seqnum); break;
+				case SRF_IP_CONN_PACKET_TYPE_DATA_NXDN: packet->data_nxdn.seq_no = htonl(cp->tx_seqnum); break;
 			}
 			srf_ip_conn_packet_hmac_add(cp->token, config_server_password_str, packet, payload_len);
 

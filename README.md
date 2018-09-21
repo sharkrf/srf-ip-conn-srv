@@ -188,5 +188,6 @@ Valid **req** values:
   "in-call" is 1 if the first entry is in an ongoing call.
   Each client has it's own entry in the "list" array. The "at" field has the
   value of the last valid data packet (raw, DMR, D-STAR, C4FM) received in Unix
-  timestamp. Valid mode values are 0 (Raw), 1 (DMR), 2 (D-STAR), 3 (C4FM).
+  timestamp. Valid mode values are 0 (Raw), 1 (DMR), 2 (D-STAR), 3 (C4FM),
+  4 (NXDN).
   Duration is in seconds.

@@ -34,6 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #define LASTHEARD_MODE_DMR		1
 #define LASTHEARD_MODE_DSTAR	2
 #define LASTHEARD_MODE_C4FM		3
+#define LASTHEARD_MODE_NXDN		4
 typedef uint8_t lastheard_mode_t;
 
 void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_t mode, time_t duration);
