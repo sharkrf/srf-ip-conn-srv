@@ -105,7 +105,7 @@ killall -HUP srf-ip-conn-srv
 ```
 
 ## Dashboard
-![Dashboard](https://cdn.rawgit.com/sharkrf/srf-ip-conn-srv/master/contrib/screenshot.png)
+![Dashboard](https://raw.githubusercontent.com/sharkrf/srf-ip-conn-srv/master/contrib/screenshot.png)
 
 The server has a web-based dashboard. In order to use it, you need to serve
 the *dashboard* directory with your web server. Make sure your webserver has
