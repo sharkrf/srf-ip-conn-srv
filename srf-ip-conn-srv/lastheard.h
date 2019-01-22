@@ -28,6 +28,8 @@ DEALINGS IN THE SOFTWARE.
 
 #include "types.h"
 
+#include <srf-ip-conn/common/srf-ip-conn-packet.h>
+
 #include <time.h>
 
 #define LASTHEARD_MODE_RAW		0
@@ -37,7 +39,8 @@ DEALINGS IN THE SOFTWARE.
 #define LASTHEARD_MODE_NXDN		4
 typedef uint8_t lastheard_mode_t;
 
-void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_t mode, time_t duration);
+void lastheard_add(char to[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1], char from[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1],
+		flag_t is_group_call, uint32_t client_id, uint32_t call_session_id, lastheard_mode_t mode, time_t duration);
 char *lastheard_build_list_json(void);
 
 #endif

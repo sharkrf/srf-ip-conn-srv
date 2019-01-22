@@ -197,8 +197,8 @@ Valid **req** values:
 	"in-call": 0
 	"list":
 	[
-		{"id":2161005,"at":1473956629,"mode":1,duration:1},
-		{"id":2161006,"at":1473956432,"mode":0,duration:5}
+		{"to":"9","from":"2161005","is-group-call":1,"client-id":2161005,"at":1473956629,"mode":1,duration:1},
+		{"to":"9","from":"2161006","is-group-call":1,"client-id":2161006,"at":1473956432,"mode":0,duration:5}
 	]
 }
 ```

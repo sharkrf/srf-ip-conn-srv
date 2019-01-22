@@ -201,7 +201,10 @@ function srf_lastheard_update() {
 				duration += ' <span class="in-call">(in call)</span>';
 
 			$('#last-heard tbody').append('<tr>' +
-				'<td>' + value.id + (srf_callsigns[value.id] != undefined ? ' (' + srf_callsigns[value.id] + ')' : '') + '</td>' +
+				'<td>' + value.to + '</td>' +
+				'<td>' + value.from + '</td>' +
+				'<td>' + (value['is-group-call'] ? 'Group' : 'Private') + '</td>' +
+				'<td>' + value['client-id'] + (srf_callsigns[value['client-id']] != undefined ? ' (' + srf_callsigns[value['client-id']] + ')' : '') + '</td>' +
 				'<td>' + at + '</td>' +
 				'<td>' + mode + '</td>' +
 				'<td>' + duration + '</td>' +

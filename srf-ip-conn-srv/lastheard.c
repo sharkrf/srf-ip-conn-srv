@@ -28,9 +28,13 @@ DEALINGS IN THE SOFTWARE.
 #include "client.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct lastheard_entry {
-	uint32_t id;
+	char to[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1];
+	char from[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1];
+	flag_t is_group_call;
+	uint32_t client_id;
 	time_t at;
 	lastheard_mode_t mode;
 	time_t duration;
@@ -43,11 +47,24 @@ typedef struct lastheard_entry {
 static lastheard_entry_t *lastheards = NULL;
 static int lastheards_count = 0;
 
-void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_t mode, time_t duration) {
+void lastheard_add(char to[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1], char from[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1],
+		flag_t is_group_call, uint32_t client_id, uint32_t call_session_id, lastheard_mode_t mode, time_t duration)
+{
 	lastheard_entry_t *newentry;
 
 	// If the first entry matches the client and call session ids, we only update it's timestamp.
-	if (lastheards != NULL && lastheards->id == client_id && lastheards->call_session_id == call_session_id) {
+	if (lastheards != NULL && lastheards->client_id == client_id && lastheards->call_session_id == call_session_id) {
+		if (memcmp(to, "N/A", 4) != 0) {
+			strncpy(lastheards->to, to, sizeof(lastheards->to));
+			lastheards->to[sizeof(lastheards->to)-1] = 0;
+
+			lastheards->is_group_call = is_group_call;
+		}
+		if (memcmp(from, "N/A", 4) != 0) {
+			strncpy(lastheards->from, from, sizeof(lastheards->from));
+			lastheards->from[sizeof(lastheards->from)-1] = 0;
+		}
+
 		lastheards->at = time(NULL);
 		lastheards->mode = mode;
 		lastheards->duration = duration;
@@ -66,7 +83,13 @@ void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_
 
 	newentry = (lastheard_entry_t *)calloc(sizeof(lastheard_entry_t), 1);
 
-	newentry->id = client_id;
+	strncpy(newentry->to, to, sizeof(newentry->to));
+	newentry->to[sizeof(newentry->to)-1] = 0;
+	strncpy(newentry->from, from, sizeof(newentry->from));
+	newentry->from[sizeof(newentry->from)-1] = 0;
+	newentry->is_group_call = is_group_call;
+
+	newentry->client_id = client_id;
 	newentry->call_session_id = call_session_id;
 	newentry->at = time(NULL);
 	newentry->mode = mode;
@@ -86,7 +109,7 @@ void lastheard_add(uint32_t client_id, uint32_t call_session_id, lastheard_mode_
 
 char *lastheard_build_list_json(void) {
 	char *res;
-	int res_size = 48+lastheards_count*100;
+	int res_size = 48+lastheards_count*(143+SRF_IP_CONN_MAX_CALLSIGN_LENGTH*2);
 	int res_remaining_size = res_size;
 	int resp;
 	int printed_chars;
@@ -110,8 +133,8 @@ char *lastheard_build_list_json(void) {
 			resp += printed_chars;
 		}
 
-		printed_chars = snprintf(res+resp, res_remaining_size, "{\"id\":%u,\"at\":%lu,\"mode\":%u,\"duration\":%lu}",
-				lh->id, lh->at, lh->mode, lh->duration);
+		printed_chars = snprintf(res+resp, res_remaining_size, "{\"to\":\"%s\",\"from\":\"%s\",\"is-group-call\":%u,\"client-id\":%u,\"at\":%lu,\"mode\":%u,\"duration\":%lu}",
+				lh->to, lh->from, lh->is_group_call, lh->client_id, lh->at, lh->mode, lh->duration);
 		res_remaining_size -= printed_chars;
 		if (res_remaining_size <= 0)
 			break;
