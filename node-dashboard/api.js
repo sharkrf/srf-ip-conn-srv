@@ -79,6 +79,39 @@ function srf_server_info_update() {
 			clearInterval(srf_timer_uptime);
 		srf_timer_uptime = setInterval(srf_update_server_uptime, 1000);
 		$('#server-githash').html(response.githash);
+
+		var protos = '';
+		if (response['allow-raw'])
+			protos += 'raw';
+
+		if (response['allow-dmr']) {
+			if (protos != '')
+				protos += ', ';
+			protos += 'DMR';
+		}
+
+		if (response['allow-dstar']) {
+			if (protos != '')
+				protos += ', ';
+			protos += 'D-STAR';
+		}
+
+		if (response['allow-c4fm']) {
+			if (protos != '')
+				protos += ', ';
+			protos += 'C4FM';
+		}
+
+		if (response['allow-nxdn']) {
+			if (protos != '')
+				protos += ', ';
+			protos += 'NXDN';
+		}
+
+		if (protos == '')
+			protos = 'None';
+
+		$('#server-allowed-protos').html(protos);
 	});
 }
 

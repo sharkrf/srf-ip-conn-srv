@@ -63,9 +63,21 @@ static char *api_build_serverdetails_json(void) {
 	if (res == NULL)
 		return NULL;
 
-	snprintf(res, res_size, "{\"req\":\"server-details\",\"name\":\"%s\",\"desc\":\"%s\",\"contact\":\"%s\","
-			"\"uptime\":%lu,\"githash\":\"%s\"}", config_server_name_str, config_server_desc_str,
-			config_server_contact_str, time(NULL)-main_started_at, GIT_SHA1);
+	snprintf(res, res_size,
+			"{\"req\":\"server-details\","
+			"\"name\":\"%s\","
+			"\"desc\":\"%s\","
+			"\"contact\":\"%s\","
+			"\"uptime\":%lu,"
+			"\"githash\":\"%s\","
+			"\"allow-raw\":%u,"
+			"\"allow-dmr\":%u,"
+			"\"allow-dstar\":%u,"
+			"\"allow-c4fm\":%u,"
+			"\"allow-nxdn\":%u"
+			"}", config_server_name_str, config_server_desc_str, config_server_contact_str,
+				time(NULL)-main_started_at, GIT_SHA1, config_allow_data_raw, config_allow_data_dmr,
+				config_allow_data_dstar, config_allow_data_c4fm, config_allow_data_nxdn);
 
 	return res;
 }

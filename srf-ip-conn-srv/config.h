@@ -51,6 +51,11 @@ extern uint16_t config_client_call_timeout_sec;
 extern uint16_t config_client_status_syslog_interval_sec;
 extern flag_t config_allow_simultaneous_calls;
 extern char config_banlist_file_str[255];
+extern flag_t config_allow_data_raw;
+extern flag_t config_allow_data_dmr;
+extern flag_t config_allow_data_dstar;
+extern flag_t config_allow_data_c4fm;
+extern flag_t config_allow_data_nxdn;
 
 flag_t config_read(char *filename);
 

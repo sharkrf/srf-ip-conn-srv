@@ -252,16 +252,19 @@ static void packet_process_raw(server_sock_received_packet_t *received_packet) {
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 
 	rx_seqnum = ntohl(packet->data_raw.seq_no);
-	if (client_in_call == NULL) {
-		syslog(LOG_INFO, "packet: client %u raw call start, sid: %.8x\n", client->client_id,
+
+	if (config_allow_data_raw) {
+		if (client_in_call == NULL) {
+			syslog(LOG_INFO, "packet: client %u raw call start, sid: %.8x\n", client->client_id,
 				ntohl(packet->data_raw.call_session_id));
-		client_in_call = client;
-		client_in_call_started_at = time(NULL);
-	}
-	if (client_in_call == client || config_allow_simultaneous_calls) {
-		lastheard_add(client->client_id, packet->data_raw.call_session_id, LASTHEARD_MODE_RAW, time(NULL)-client_in_call_started_at);
-		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_raw_payload_t),
-			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+			client_in_call = client;
+			client_in_call_started_at = time(NULL);
+		}
+		if (client_in_call == client || config_allow_simultaneous_calls) {
+			lastheard_add(client->client_id, packet->data_raw.call_session_id, LASTHEARD_MODE_RAW, time(NULL)-client_in_call_started_at);
+			client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_raw_payload_t),
+				packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+		}
 	}
 	client->rx_seqnum = rx_seqnum;
 }
@@ -285,29 +288,32 @@ static void packet_process_dmr(server_sock_received_packet_t *received_packet) {
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 
 	rx_seqnum = ntohl(packet->data_dmr.seq_no);
-	if (client_in_call == NULL) {
-		syslog(LOG_INFO, "packet: client dmr %u call start, sid: %.8x\n", client->client_id,
-				ntohl(packet->data_dmr.call_session_id));
-		client_in_call = client;
-		client_in_call_started_at = time(NULL);
-	}
-	data_pkt = 0;
-	switch (packet->data_dmr.slot_type) {
-		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_CSBK:
-		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_DATA_HEADER:
-		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_RATE_12_DATA:
-		case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_RATE_34_DATA:
-			data_pkt = 1;
-	}
-	if (client_in_call == client || config_allow_simultaneous_calls || data_pkt) {
-		lastheard_add(client->client_id, packet->data_dmr.call_session_id, LASTHEARD_MODE_DMR, time(NULL)-client_in_call_started_at);
-		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dmr_payload_t),
-			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
-		if (packet->data_dmr.slot_type == SRF_IP_CONN_DATA_DMR_SLOT_TYPE_TERMINATOR_WITH_LC || data_pkt) {
-			syslog(LOG_INFO, "packet: client %u dmr call end, sid: %.8x, duration %lu sec.\n", client->client_id,
+	if (config_allow_data_dmr) {
+		if (client_in_call == NULL) {
+			syslog(LOG_INFO, "packet: client dmr %u call start, sid: %.8x\n", client->client_id,
+				ntohl(packet->data_dmr.call_session_id));
+			client_in_call = client;
+			client_in_call_started_at = time(NULL);
+		}
+		data_pkt = 0;
+		switch (packet->data_dmr.slot_type) {
+			case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_CSBK:
+			case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_DATA_HEADER:
+			case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_RATE_12_DATA:
+			case SRF_IP_CONN_DATA_DMR_SLOT_TYPE_RATE_34_DATA:
+				data_pkt = 1;
+		}
+		if (client_in_call == client || config_allow_simultaneous_calls || data_pkt) {
+			lastheard_add(client->client_id, packet->data_dmr.call_session_id, LASTHEARD_MODE_DMR, time(NULL)-client_in_call_started_at);
+			client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dmr_payload_t),
+				packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+
+			if (packet->data_dmr.slot_type == SRF_IP_CONN_DATA_DMR_SLOT_TYPE_TERMINATOR_WITH_LC || data_pkt) {
+				syslog(LOG_INFO, "packet: client %u dmr call end, sid: %.8x, duration %lu sec.\n", client->client_id,
 					ntohl(packet->data_dmr.call_session_id), time(NULL)-client_in_call_started_at);
-			client_in_call = NULL;
+				client_in_call = NULL;
+			}
 		}
 	}
 	client->rx_seqnum = rx_seqnum;
@@ -333,28 +339,31 @@ static void packet_process_dstar(server_sock_received_packet_t *received_packet)
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 
 	rx_seqnum = ntohl(packet->data_dstar.seq_no);
-	if (client_in_call == NULL) {
-		syslog(LOG_INFO, "packet: client %u dstar call start, sid: %.8x\n", client->client_id,
-				ntohl(packet->data_dstar.call_session_id));
-		client_in_call = client;
-		client_in_call_started_at = time(NULL);
-	}
-	if (client_in_call == client || config_allow_simultaneous_calls) {
-		lastheard_add(client->client_id, ntohl(packet->data_dstar.call_session_id), LASTHEARD_MODE_DSTAR, time(NULL)-client_in_call_started_at);
-		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dstar_payload_t),
-			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
-		got_terminator = 0;
-		for (i = 0; i < packet->data_dstar.storage.packet_count; i++) {
-			if (packet->data_dstar.storage.packet_types[i] == SRF_IP_CONN_DATA_DSTAR_PACKET_TYPE_TERMINATOR)
-				got_terminator = 1;
-			else
-				got_terminator = 0;
+	if (config_allow_data_dstar) {
+		if (client_in_call == NULL) {
+			syslog(LOG_INFO, "packet: client %u dstar call start, sid: %.8x\n", client->client_id,
+				ntohl(packet->data_dstar.call_session_id));
+			client_in_call = client;
+			client_in_call_started_at = time(NULL);
 		}
-		if (got_terminator) {
-			syslog(LOG_INFO, "packet: client %u dstar call end, sid: %.8x, duration %lu sec.\n", client->client_id,
+		if (client_in_call == client || config_allow_simultaneous_calls) {
+			lastheard_add(client->client_id, ntohl(packet->data_dstar.call_session_id), LASTHEARD_MODE_DSTAR, time(NULL)-client_in_call_started_at);
+			client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_dstar_payload_t),
+				packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+
+			got_terminator = 0;
+			for (i = 0; i < packet->data_dstar.storage.packet_count; i++) {
+				if (packet->data_dstar.storage.packet_types[i] == SRF_IP_CONN_DATA_DSTAR_PACKET_TYPE_TERMINATOR)
+					got_terminator = 1;
+				else
+					got_terminator = 0;
+			}
+			if (got_terminator) {
+				syslog(LOG_INFO, "packet: client %u dstar call end, sid: %.8x, duration %lu sec.\n", client->client_id,
 					ntohl(packet->data_dstar.call_session_id), time(NULL)-client_in_call_started_at);
-			client_in_call = NULL;
+				client_in_call = NULL;
+			}
 		}
 	}
 	client->rx_seqnum = rx_seqnum;
@@ -378,21 +387,24 @@ static void packet_process_c4fm(server_sock_received_packet_t *received_packet) 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 
 	rx_seqnum = ntohl(packet->data_c4fm.seq_no);
-	if (client_in_call == NULL || config_allow_simultaneous_calls) {
-		syslog(LOG_INFO, "packet: client %u c4fm call start, sid: %.8x\n", client->client_id,
-				ntohl(packet->data_c4fm.call_session_id));
-		client_in_call = client;
-		client_in_call_started_at = time(NULL);
-	}
-	if (client_in_call == client) {
-		lastheard_add(client->client_id, ntohl(packet->data_c4fm.call_session_id), LASTHEARD_MODE_C4FM, time(NULL)-client_in_call_started_at);
-		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_c4fm_payload_t),
-			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
-		if (packet->data_c4fm.packet_type == SRF_IP_CONN_DATA_C4FM_PACKET_TYPE_TERMINATOR) {
-			syslog(LOG_INFO, "packet: client %u c4fm call end, sid: %.8x, duration %lu sec.\n", client->client_id,
+	if (config_allow_data_c4fm) {
+		if (client_in_call == NULL || config_allow_simultaneous_calls) {
+			syslog(LOG_INFO, "packet: client %u c4fm call start, sid: %.8x\n", client->client_id,
+				ntohl(packet->data_c4fm.call_session_id));
+			client_in_call = client;
+			client_in_call_started_at = time(NULL);
+		}
+		if (client_in_call == client) {
+			lastheard_add(client->client_id, ntohl(packet->data_c4fm.call_session_id), LASTHEARD_MODE_C4FM, time(NULL)-client_in_call_started_at);
+			client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_c4fm_payload_t),
+				packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+
+			if (packet->data_c4fm.packet_type == SRF_IP_CONN_DATA_C4FM_PACKET_TYPE_TERMINATOR) {
+				syslog(LOG_INFO, "packet: client %u c4fm call end, sid: %.8x, duration %lu sec.\n", client->client_id,
 					ntohl(packet->data_c4fm.call_session_id), time(NULL)-client_in_call_started_at);
-			client_in_call = NULL;
+				client_in_call = NULL;
+			}
 		}
 	}
 	client->rx_seqnum = rx_seqnum;
@@ -417,24 +429,27 @@ static void packet_process_nxdn(server_sock_received_packet_t *received_packet) 
 	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
 
 	rx_seqnum = ntohl(packet->data_nxdn.seq_no);
-	if (client_in_call == NULL) {
-		syslog(LOG_INFO, "packet: client nxdn %u call start, sid: %.8x\n", client->client_id,
+
+	if (config_allow_data_nxdn) {
+		if (client_in_call == NULL) {
+			syslog(LOG_INFO, "packet: client nxdn %u call start, sid: %.8x\n", client->client_id,
 				ntohl(packet->data_nxdn.call_session_id));
-		client_in_call = client;
-		client_in_call_started_at = time(NULL);
-	}
+			client_in_call = client;
+			client_in_call_started_at = time(NULL);
+		}
 
-	data_pkt = (packet->data_nxdn.packet_type == SRF_IP_CONN_DATA_NXDN_PACKET_TYPE_DATA);
+		data_pkt = (packet->data_nxdn.packet_type == SRF_IP_CONN_DATA_NXDN_PACKET_TYPE_DATA);
 
-	if (client_in_call == client || config_allow_simultaneous_calls || data_pkt) {
-		lastheard_add(client->client_id, packet->data_nxdn.call_session_id, LASTHEARD_MODE_NXDN, time(NULL)-client_in_call_started_at);
-		client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_nxdn_payload_t),
-			packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+		if (client_in_call == client || config_allow_simultaneous_calls || data_pkt) {
+			lastheard_add(client->client_id, packet->data_nxdn.call_session_id, LASTHEARD_MODE_NXDN, time(NULL)-client_in_call_started_at);
+			client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_nxdn_payload_t),
+				packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
 
-		if (packet->data_nxdn.packet_type == SRF_IP_CONN_DATA_NXDN_PACKET_TYPE_TERMINATOR || data_pkt) {
-			syslog(LOG_INFO, "packet: client %u nxdn call end, sid: %.8x, duration %lu sec.\n", client->client_id,
+			if (packet->data_nxdn.packet_type == SRF_IP_CONN_DATA_NXDN_PACKET_TYPE_TERMINATOR || data_pkt) {
+				syslog(LOG_INFO, "packet: client %u nxdn call end, sid: %.8x, duration %lu sec.\n", client->client_id,
 					ntohl(packet->data_nxdn.call_session_id), time(NULL)-client_in_call_started_at);
-			client_in_call = NULL;
+				client_in_call = NULL;
+			}
 		}
 	}
 	client->rx_seqnum = rx_seqnum;

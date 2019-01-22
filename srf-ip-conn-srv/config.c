@@ -50,13 +50,18 @@ uint16_t config_client_call_timeout_sec = 3;
 uint16_t config_client_status_syslog_interval_sec = 30;
 flag_t config_allow_simultaneous_calls = 0;
 char config_banlist_file_str[255] = {0,};
+flag_t config_allow_data_raw = 1;
+flag_t config_allow_data_dmr = 1;
+flag_t config_allow_data_dstar = 1;
+flag_t config_allow_data_c4fm = 1;
+flag_t config_allow_data_nxdn = 1;
 
 flag_t config_read(char *filename) {
 	FILE *f;
 	long fsize;
 	char *buf;
 	jsmn_parser json_parser;
-	jsmntok_t tok[35];
+	jsmntok_t *tok;
 	int json_entry_count;
 	int i;
 	char port_str[6] = {0,};
@@ -78,6 +83,11 @@ flag_t config_read(char *filename) {
 	char client_status_syslog_interval_sec_str[6] = {0,};
 	char allow_simultaneous_calls_str[2] = {0,};
 	char banlist_file_str[255] = {0,};
+	char allow_data_raw_str[2] = {0,};
+	char allow_data_dmr_str[2] = {0,};
+	char allow_data_dstar_str[2] = {0,};
+	char allow_data_c4fm_str[2] = {0,};
+	char allow_data_nxdn_str[2] = {0,};
 
 	f = fopen(filename, "r");
 	if (f == NULL) {
@@ -104,8 +114,17 @@ flag_t config_read(char *filename) {
 	fclose(f);
 
 	jsmn_init(&json_parser);
-	json_entry_count = jsmn_parse(&json_parser, buf, fsize, tok, sizeof(tok) / sizeof(tok[0]));
+	json_entry_count = jsmn_parse(&json_parser, buf, fsize, NULL, 0);
+	tok = calloc(json_entry_count, sizeof(jsmntok_t));
+	if (tok == NULL) {
+		free(buf);
+		syslog(LOG_ERR, "config: error allocating JSON tokens for file: %s\n", filename);
+		return 0;
+	}
+	jsmn_init(&json_parser);
+	json_entry_count = jsmn_parse(&json_parser, buf, fsize, tok, json_entry_count);
 	if (json_entry_count < 1 || tok[0].type != JSMN_OBJECT) {
+		free(tok);
 		free(buf);
 		syslog(LOG_ERR, "config: error parsing file: %s\n", filename);
 		return 0;
@@ -169,13 +188,30 @@ flag_t config_read(char *filename) {
 		} else if (json_compare_tok_key(buf, &tok[i], "banlist-file")) {
 			json_get_value(buf, &tok[i+1], banlist_file_str, sizeof(banlist_file_str));
 			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "allow-data-raw")) {
+			json_get_value(buf, &tok[i+1], allow_data_raw_str, sizeof(allow_data_raw_str));
+			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "allow-data-dmr")) {
+			json_get_value(buf, &tok[i+1], allow_data_dmr_str, sizeof(allow_data_dmr_str));
+			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "allow-data-dstar")) {
+			json_get_value(buf, &tok[i+1], allow_data_dstar_str, sizeof(allow_data_dstar_str));
+			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "allow-data-c4fm")) {
+			json_get_value(buf, &tok[i+1], allow_data_c4fm_str, sizeof(allow_data_c4fm_str));
+			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "allow-data-nxdn")) {
+			json_get_value(buf, &tok[i+1], allow_data_nxdn_str, sizeof(allow_data_nxdn_str));
+			i++;
 		} else {
+			free(tok);
 			free(buf);
 			syslog(LOG_ERR, "config: unexpected key at %u\n", tok[i].start);
 			return 0;
 		}
 	}
 
+	free(tok);
 	free(buf);
 
 	if (port_str[0])
@@ -216,6 +252,16 @@ flag_t config_read(char *filename) {
 		config_allow_simultaneous_calls = (allow_simultaneous_calls_str[0] == '1');
 	if (banlist_file_str[0])
 		strncpy(config_banlist_file_str, banlist_file_str, sizeof(config_banlist_file_str));
+	if (allow_data_raw_str[0])
+		config_allow_data_raw = (allow_data_raw_str[0] == '1');
+	if (allow_data_dmr_str[0])
+		config_allow_data_dmr = (allow_data_dmr_str[0] == '1');
+	if (allow_data_dstar_str[0])
+		config_allow_data_dstar = (allow_data_dstar_str[0] == '1');
+	if (allow_data_c4fm_str[0])
+		config_allow_data_c4fm = (allow_data_c4fm_str[0] == '1');
+	if (allow_data_nxdn_str[0])
+		config_allow_data_nxdn = (allow_data_nxdn_str[0] == '1');
 
 	return 1;
 }

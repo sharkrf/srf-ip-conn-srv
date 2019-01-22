@@ -15,5 +15,10 @@
   "server-desc": "",
   "server-contact": "",
   "allow-simultaneous-calls": 0,
-  "banlist-file": ""
+  "banlist-file": "",
+  "allow-data-raw": 0,
+  "allow-data-dmr": 1,
+  "allow-data-dstar": 1,
+  "allow-data-c4fm": 1,
+  "allow-data-nxdn": 1
 }

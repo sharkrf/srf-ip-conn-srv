@@ -83,6 +83,19 @@ Available configuration options:
 - **banlist-file**: if you want to use a ban list, you can specify it's
   filename here. You can ban client IDs and/or IP addresses. See
   *banlist-example.json* for an example structure for the ban list file.
+- **allow-data-raw**: set this to 1 to enable raw data packet handling. Can be
+  used to disable raw data forwarding on the server. The default value is 0.
+- **allow-data-dmr**: set this to 1 to enable DMR data packet handling. Can be
+  used to disable DMR data forwarding on the server. The default value is 1.
+- **allow-data-dstar**: set this to 1 to enable D-STAR data packet handling.
+  Can be used to disable D-STAR data forwarding on the server. The default
+  value is 1.
+- **allow-data-c4fm**: set this to 1 to enable C4FM data packet handling.
+  Can be used to disable C4FM data forwarding on the server. The default value
+  is 1.
+- **allow-data-nxdn**: set this to 1 to enable NXDN data packet handling.
+  Can be used to disable NXDN data forwarding on the server. The default value
+  is 1.
 
 You can reload the config file and the banlist without restarting the server
 by sending SIGHUP to the process:
@@ -134,13 +147,18 @@ Valid **req** values:
 	"desc": "No description",
 	"contact": "ha2non@sharkrf.com",
 	"uptime": 1635,
-	"githash": "d04633f145069ed4d60d17bf76df447f459f1ed4"
+	"githash": "d04633f145069ed4d60d17bf76df447f459f1ed4",
+	"allow-raw": 1,
+	"allow-dmr": 1,
+	"allow-dstar": 1,
+	"allow-c4fm": 1,
+	"allow-nxdn": 1
 }
 ```
 
-  "name", "desc" and "contact" fields have the values set in srf-ip-conn-srv's
-  config file. "uptime" is in seconds. The "githash" field is the compiled
-  version's Git hash.
+  "name", "desc", "contact", "allow-*" fields have the values set in
+  srf-ip-conn-srv's config file. "uptime" is in seconds. The "githash" field
+  is the compiled version's Git hash.
 
 - **client-config**: requests client config. "client-id" field needs to be
   specified amongst "req" field in the request JSON. The response looks like
