@@ -96,6 +96,9 @@ Available configuration options:
 - **allow-data-nxdn**: set this to 1 to enable NXDN data packet handling.
   Can be used to disable NXDN data forwarding on the server. The default value
   is 1.
+- **allow-data-p25**: set this to 1 to enable P25 data packet handling.
+  Can be used to disable P25 data forwarding on the server. The default value
+  is 1.
 
 You can reload the config file and the banlist without restarting the server
 by sending SIGHUP to the process:
@@ -152,7 +155,8 @@ Valid **req** values:
 	"allow-dmr": 1,
 	"allow-dstar": 1,
 	"allow-c4fm": 1,
-	"allow-nxdn": 1
+	"allow-nxdn": 1,
+	"allow-p25": 1
 }
 ```
 
@@ -207,5 +211,5 @@ Valid **req** values:
   Each client has it's own entry in the "list" array. The "at" field has the
   value of the last valid data packet (raw, DMR, D-STAR, C4FM) received in Unix
   timestamp. Valid mode values are 0 (Raw), 1 (DMR), 2 (D-STAR), 3 (C4FM),
-  4 (NXDN).
+  4 (NXDN), 5 (P25).
   Duration is in seconds.

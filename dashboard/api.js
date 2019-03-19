@@ -104,6 +104,12 @@ function srf_server_info_update() {
 			protos += 'NXDN';
 		}
 
+		if (response['allow-p25']) {
+			if (protos != '')
+				protos += ', ';
+			protos += 'P25';
+		}
+
 		if (protos == '')
 			protos = 'None';
 
@@ -187,6 +193,7 @@ function srf_lastheard_update() {
 				case 2: mode = 'D-STAR'; break;
 				case 3: mode = 'C4FM'; break;
 				case 4: mode = 'NXDN'; break;
+				case 5: mode = 'P25'; break;
 				default: mode = 'Unknown'; break;
 			}
 			var duration;

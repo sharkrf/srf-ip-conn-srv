@@ -37,6 +37,7 @@ DEALINGS IN THE SOFTWARE.
 #define LASTHEARD_MODE_DSTAR	2
 #define LASTHEARD_MODE_C4FM		3
 #define LASTHEARD_MODE_NXDN		4
+#define LASTHEARD_MODE_P25		5
 typedef uint8_t lastheard_mode_t;
 
 void lastheard_add(char to[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1], char from[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1],

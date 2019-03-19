@@ -481,6 +481,56 @@ static void packet_process_nxdn(server_sock_received_packet_t *received_packet) 
 	client->rx_seqnum = rx_seqnum;
 }
 
+static void packet_process_p25(server_sock_received_packet_t *received_packet) {
+	srf_ip_conn_packet_t *packet = (srf_ip_conn_packet_t *)received_packet->buf;
+	client_t *client;
+	uint32_t rx_seqnum;
+	flag_t data_pkt;
+	char to[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1];
+	char from[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1];
+
+	if (received_packet->received_bytes != sizeof(srf_ip_conn_packet_header_t) + sizeof(srf_ip_conn_data_p25_payload_t))
+		return;
+
+	client = client_search(&received_packet->from_addr);
+	if (!client)
+		return;
+
+	if (!srf_ip_conn_packet_hmac_check(client->token, config_server_password_str, packet, sizeof(srf_ip_conn_data_p25_payload_t)))
+		return;
+
+	client->last_data_packet_at = client->last_valid_packet_got_at = time(NULL);
+
+	rx_seqnum = ntohl(packet->data_p25.seq_no);
+
+	if (config_allow_data_p25) {
+		if (client_in_call == NULL) {
+			syslog(LOG_INFO, "packet: client p25 %u call start, sid: %.8x\n", client->client_id,
+				ntohl(packet->data_p25.call_session_id));
+			client_in_call = client;
+			client_in_call_started_at = time(NULL);
+		}
+
+		data_pkt = (packet->data_p25.packet_type == SRF_IP_CONN_DATA_P25_PACKET_TYPE_DATA);
+
+		if (client_in_call == client || config_allow_simultaneous_calls || data_pkt) {
+			snprintf(to, sizeof(to), "%u", (unsigned int)(packet->data_p25.dst_id[0] << 16) | (packet->data_p25.dst_id[1] << 8) | packet->data_p25.dst_id[2]);
+			snprintf(from, sizeof(from), "%u", (unsigned int)(packet->data_p25.src_id[0] << 16) | (packet->data_p25.src_id[1] << 8) | packet->data_p25.src_id[2]);
+			lastheard_add(to, from, packet->data_p25.call_type, client->client_id, packet->data_p25.call_session_id,
+				LASTHEARD_MODE_P25, time(NULL)-client_in_call_started_at);
+			client_broadcast(client, packet, received_packet->received_bytes, sizeof(srf_ip_conn_data_p25_payload_t),
+				packet_get_missing_packet_count(rx_seqnum, client->rx_seqnum));
+
+			if (packet->data_p25.packet_type == SRF_IP_CONN_DATA_P25_PACKET_TYPE_TERMINATOR || data_pkt) {
+				syslog(LOG_INFO, "packet: client %u p25 call end, sid: %.8x, duration %lu sec.\n", client->client_id,
+					ntohl(packet->data_p25.call_session_id), time(NULL)-client_in_call_started_at);
+				client_in_call = NULL;
+			}
+		}
+	}
+	client->rx_seqnum = rx_seqnum;
+}
+
 void packet_process(server_sock_received_packet_t *received_packet) {
 	srf_ip_conn_packet_header_t *header = (srf_ip_conn_packet_header_t *)received_packet->buf;
 
@@ -516,6 +566,9 @@ void packet_process(server_sock_received_packet_t *received_packet) {
 					break;
 				case SRF_IP_CONN_PACKET_TYPE_DATA_NXDN:
 					packet_process_nxdn(received_packet);
+					break;
+				case SRF_IP_CONN_PACKET_TYPE_DATA_P25:
+					packet_process_p25(received_packet);
 					break;
 			}
 			break;

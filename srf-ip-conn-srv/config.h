@@ -56,6 +56,7 @@ extern flag_t config_allow_data_dmr;
 extern flag_t config_allow_data_dstar;
 extern flag_t config_allow_data_c4fm;
 extern flag_t config_allow_data_nxdn;
+extern flag_t config_allow_data_p25;
 
 flag_t config_read(char *filename);
 

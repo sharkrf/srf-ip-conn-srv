@@ -55,6 +55,7 @@ flag_t config_allow_data_dmr = 1;
 flag_t config_allow_data_dstar = 1;
 flag_t config_allow_data_c4fm = 1;
 flag_t config_allow_data_nxdn = 1;
+flag_t config_allow_data_p25 = 1;
 
 flag_t config_read(char *filename) {
 	FILE *f;
@@ -88,6 +89,7 @@ flag_t config_read(char *filename) {
 	char allow_data_dstar_str[2] = {0,};
 	char allow_data_c4fm_str[2] = {0,};
 	char allow_data_nxdn_str[2] = {0,};
+	char allow_data_p25_str[2] = {0,};
 
 	f = fopen(filename, "r");
 	if (f == NULL) {
@@ -203,6 +205,9 @@ flag_t config_read(char *filename) {
 		} else if (json_compare_tok_key(buf, &tok[i], "allow-data-nxdn")) {
 			json_get_value(buf, &tok[i+1], allow_data_nxdn_str, sizeof(allow_data_nxdn_str));
 			i++;
+		} else if (json_compare_tok_key(buf, &tok[i], "allow-data-p25")) {
+			json_get_value(buf, &tok[i+1], allow_data_p25_str, sizeof(allow_data_p25_str));
+			i++;
 		} else {
 			free(tok);
 			free(buf);
@@ -262,6 +267,8 @@ flag_t config_read(char *filename) {
 		config_allow_data_c4fm = (allow_data_c4fm_str[0] == '1');
 	if (allow_data_nxdn_str[0])
 		config_allow_data_nxdn = (allow_data_nxdn_str[0] == '1');
+	if (allow_data_p25_str[0])
+		config_allow_data_p25 = (allow_data_p25_str[0] == '1');
 
 	return 1;
 }
