@@ -74,10 +74,11 @@ static char *api_build_serverdetails_json(void) {
 			"\"allow-dmr\":%u,"
 			"\"allow-dstar\":%u,"
 			"\"allow-c4fm\":%u,"
-			"\"allow-nxdn\":%u"
+			"\"allow-nxdn\":%u,"
+			"\"allow-p25\":%u"
 			"}", config_server_name_str, config_server_desc_str, config_server_contact_str,
 				time(NULL)-main_started_at, GIT_SHA1, config_allow_data_raw, config_allow_data_dmr,
-				config_allow_data_dstar, config_allow_data_c4fm, config_allow_data_nxdn);
+				config_allow_data_dstar, config_allow_data_c4fm, config_allow_data_nxdn, config_allow_data_p25);
 
 	return res;
 }
