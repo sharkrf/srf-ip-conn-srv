@@ -188,13 +188,15 @@ client_t *client_login_search(struct sockaddr *from_addr) {
 client_t *client_login_add(uint32_t client_id, struct sockaddr *from_addr) {
 	client_t *newclient;
 	int i;
+	flag_t client_found = 0;
 
 	newclient = client_login_search(from_addr);
 	if (newclient == NULL) {
 		newclient = (client_t *)calloc(sizeof(client_t), 1);
 		if (newclient == NULL)
 			return NULL;
-	}
+	} else
+		client_found = 1;
 
 	newclient->client_id = client_id;
 	for (i = 0; i < SRF_IP_CONN_TOKEN_LENGTH; i++)
@@ -203,16 +205,18 @@ client_t *client_login_add(uint32_t client_id, struct sockaddr *from_addr) {
 	newclient->last_valid_packet_got_at = time(NULL);
 	newclient->rx_seqnum = newclient->tx_seqnum = 0xffffffff;
 
-	if (clients_login == NULL)
-		clients_login = newclient;
-	else {
-		// Inserting to the beginning of the login clients list.
-		clients_login->prev = newclient;
-		newclient->next = clients_login;
-		clients_login = newclient;
-	}
+	if (!client_found) {
+		if (clients_login == NULL)
+			clients_login = newclient;
+		else {
+			// Inserting to the beginning of the login clients list.
+			clients_login->prev = newclient;
+			newclient->next = clients_login;
+			clients_login = newclient;
+		}
 
-	clients_login_count++;
+		clients_login_count++;
+	}
 
 	return newclient;
 }
