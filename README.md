@@ -27,7 +27,11 @@ and [jsmn](https://github.com/zserge/jsmn):
 ```
 git clone https://github.com/sharkrf/srf-ip-conn
 git clone https://github.com/zserge/jsmn
+cd jsmn
+git checkout 732d283ee9a2e5c34c52af0e044850576888ab09
 ```
+
+Note that jsmn commit ```732d283``` need to be used.
 
 ### Compiling
 ```
