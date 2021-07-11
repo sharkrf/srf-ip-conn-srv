@@ -65,7 +65,7 @@ color: #f9f9f9;
 }
 
 /* Client info close button */
-.btn-default {
+.dark .btn-default {
     text-shadow: none !important;
     background-image: -webkit-linear-gradient(top,#515151 0,#222222 100%) !important;
     background-image: -o-linear-gradient(top,#515151 0,#222222 100%) !important;
@@ -75,16 +75,15 @@ color: #f9f9f9;
     border-color: #222222 !important;
     color: #FFF !important;
 }
-.btn-default:hover,
-.btn-default:focus {
+.dark .btn-default:hover,
+.dark .btn-default:focus {
  background-color: #222222 !important;
 }
-.btn-default:active,
-.btn-default.active {
+.dark .btn-default:active,
+.dark .btn-default.active {
  background-color: #222222 !important;
 }
-.btn-default:disabled,
-.btn-default[disabled] {
+.dark .btn-default:disabled,
+.dark .btn-default[disabled] {
  background-color: #222222 !important;
 }
-*/
