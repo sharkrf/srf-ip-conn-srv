@@ -1,0 +1,22 @@
+/* These rules allow the page to transition between the different themes in a smooth way
+   It's separated because upon load we do not want to animate anything, only once the initial switch happens */
+
+body,
+.panel-title,
+td,
+tr,
+.col-sm-6,
+#title
+.modal-title,
+.panel-body,
+.modal-content,
+/* .panel-heading, */
+.table-striped > tbody > tr:nth-child(odd),
+.btn-default,
+.close {
+	transition-property: background, color, background-color, background-image;
+	transition-duration: 200ms;
+	transition-timing-function: ease-out;
+	animation-play-state: running;
+
+}
