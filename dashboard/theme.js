@@ -22,6 +22,7 @@ function setClass(selection) {
 }
 
 function switchTheme(themeSelection) {
+	themeSelection = themeSelection.toLowerCase()
 	switch (themeSelection) {
 		case 'light':
 		case 'dark':
@@ -31,8 +32,21 @@ function switchTheme(themeSelection) {
 			alertify.success(`Theme changed to ${themeSelection}!`);
 			break;
 		default:
-			console.error('Invalid theme given');
-			alertify.error(`Something went wrong when saving your preference: '${themeSelection}' is not a valid theme argument.`);
+			console.error('Invalid argument, check the following table for the correct arguments');
+			console.table({
+				"1": {
+					"Color mode": "Light mode",
+					"argument": "light"
+				},
+				"2": {
+					"Color mode": "Dark mode",
+					"argument": "dark"
+				},
+				"3": {
+					"Color mode": "Super dark/OLED optimized",
+					"argument": "oled"
+				}
+			});
 			break;
 	}
 }

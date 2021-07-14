@@ -12,11 +12,8 @@ tr,
 .modal-content,
 /* .panel-heading, */
 .table-striped > tbody > tr:nth-child(odd),
-.btn-default,
 .close {
 	transition-property: background, color, background-color, background-image;
 	transition-duration: 200ms;
 	transition-timing-function: ease-out;
-	animation-play-state: running;
-
 }
