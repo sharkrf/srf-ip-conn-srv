@@ -209,9 +209,9 @@ flag_t config_read(char *filename) {
 			json_get_value(buf, &tok[i+1], allow_data_p25_str, sizeof(allow_data_p25_str));
 			i++;
 		} else {
+			syslog(LOG_ERR, "config: unexpected key at %u\n", tok[i].start);
 			free(tok);
 			free(buf);
-			syslog(LOG_ERR, "config: unexpected key at %u\n", tok[i].start);
 			return 0;
 		}
 	}
