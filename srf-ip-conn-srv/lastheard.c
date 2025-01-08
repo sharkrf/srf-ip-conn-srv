@@ -47,8 +47,8 @@ typedef struct lastheard_entry {
 static lastheard_entry_t *lastheards = NULL;
 static int lastheards_count = 0;
 
-void lastheard_add(char to[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1], char from[SRF_IP_CONN_MAX_CALLSIGN_LENGTH+1],
-		flag_t is_group_call, uint32_t client_id, uint32_t call_session_id, lastheard_mode_t mode, time_t duration)
+void lastheard_add(char *to, char *from, flag_t is_group_call, uint32_t client_id, uint32_t call_session_id,
+	lastheard_mode_t mode, time_t duration)
 {
 	lastheard_entry_t *newentry;
 
