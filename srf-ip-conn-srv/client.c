@@ -246,9 +246,11 @@ client_t *client_search(struct sockaddr *from_addr) {
 }
 
 void client_add(client_t *client) {
-	if (clients == NULL)
+	client->prev = NULL;
+	if (clients == NULL) {
+		client->next = NULL;
 		clients = client;
-	else {
+	} else {
 		// Inserting to the beginning of the clients list.
 		clients->prev = client;
 		client->next = clients;
